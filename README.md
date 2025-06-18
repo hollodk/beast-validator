@@ -1,8 +1,8 @@
 # 🐾 BeastValidator
 
-> A flexible, lightweight JavaScript form validator with no dependencies.  
->  
-> 🔗 **[Live Demo](https://hollodk.github.io/beast-validator/)**  
+> A flexible, lightweight JavaScript form validator with no dependencies.
+>
+> 🔗 **[Live Demo](https://hollodk.github.io/beast-validator/)**
 > 📁 **[GitHub Repository](https://github.com/hollodk/beast-validator)**
 
 BeastValidator helps validate HTML forms with native semantics (`required`, `type="email"`, `pattern`, etc.), while enhancing UX through tooltips, helper messages, shake animations, and scroll-to-error functionality.
@@ -11,14 +11,14 @@ BeastValidator helps validate HTML forms with native semantics (`required`, `typ
 
 ## ✨ Features
 
-- ✅ Validates required inputs, selects, checkboxes, and radios  
-- 📬 Built-in email format checker  
-- 🎯 Custom pattern matching via `data-pattern`  
-- 🧠 Tooltips and inline error messages  
-- 🔄 Realtime validation on input/change  
-- 💥 Shake animation on error  
-- ⬇️ Scrolls and focuses the first invalid field  
-- 🧩 `onFail` callback returns all failed fields  
+- ✅ Validates required inputs, selects, checkboxes, and radios
+- 📬 Built-in email format checker
+- 🎯 Custom pattern matching via `data-pattern`
+- 🧠 Tooltips and inline error messages
+- 🔄 Realtime validation on input/change
+- 💥 Shake animation on error
+- ⬇️ Scrolls and focuses the first invalid field
+- 🧩 `onFail` callback returns all failed fields
 - 💡 Zero dependencies — pure JS!
 
 ---
@@ -32,20 +32,44 @@ BeastValidator helps validate HTML forms with native semantics (`required`, `typ
 <link rel="stylesheet" href="https://hollodk.github.io/beast-validator/beast-validator.css">
 ```
 
-### Option 2: Manual Download
+---
+
+### Option 2: NPM (For modern JavaScript projects)
+
+```bash
+npm install beastvalidator
+```
+
+```js
+import BeastValidator from 'beastvalidator';
+```
+
+> 🔗 NPM package: [https://www.npmjs.com/package/beastvalidator](https://www.npmjs.com/package/beastvalidator)
+
+---
+
+### Option 3: Composer / Packagist (For PHP-based projects)
+
+```bash
+composer require hollodk/beastvalidator
+```
+
+> 🔗 Packagist package: [https://packagist.org/packages/hollodk/beastvalidator](https://packagist.org/packages/hollodk/beastvalidator)
+
+---
+
+### Option 4: Manual Download
 
 ```bash
 git clone https://github.com/hollodk/beast-validator.git
 ```
 
-Then include in your page:
+Include the files manually:
 
 ```html
 <script src="/your-path/beast-validator.js"></script>
 <link rel="stylesheet" href="/your-path/beast-validator.css">
 ```
-
-> 📦 NPM and Composer packages are planned for future release.
 
 ---
 
@@ -192,13 +216,13 @@ You can also manually call `validateField(field)` or `validate()` if needed.
 
 ## 🔭 Planned Features
 
-- [x] Scroll to first invalid field  
-- [x] `data-error-container` for custom error placement  
-- [ ] `data-error` for per-field messages  
-- [ ] Visual success indicators  
-- [ ] Async/remote validation (e.g. unique email)  
-- [ ] TypeScript types  
-- [ ] NPM + Composer package  
+- [x] Scroll to first invalid field
+- [x] `data-error-container` for custom error placement
+- [ ] `data-error` for per-field messages
+- [ ] Visual success indicators
+- [ ] Async/remote validation (e.g. unique email)
+- [ ] TypeScript types
+- [x] NPM + Composer package
 - [ ] `reset()` method to clear validation state
 
 ---
@@ -212,9 +236,9 @@ We welcome contributions!
 git clone https://github.com/hollodk/beast-validator.git
 ```
 
-1. Fork this repo  
-2. Create a feature branch  
-3. Follow the simple architecture (vanilla JS)  
+1. Fork this repo
+2. Create a feature branch
+3. Follow the simple architecture (vanilla JS)
 4. Submit a pull request
 
 Please keep dependencies at zero.
@@ -225,7 +249,7 @@ Please keep dependencies at zero.
 
 BeastValidator supports all modern browsers:
 
-- ✅ Chrome, Edge, Firefox, Safari, Brave, Opera  
+- ✅ Chrome, Edge, Firefox, Safari, Brave, Opera
 - ⚠️ IE not supported
 
 ---
@@ -238,7 +262,7 @@ MIT License — Free for personal and commercial use.
 
 ## 🙌 Author
 
-Made with 💛 by [@hollodk](https://github.com/hollodk)  
-🔗 Demo: [https://hollodk.github.io/beast-validator/](https://hollodk.github.io/beast-validator/)  
+Made with 💛 by [@hollodk](https://github.com/hollodk)
+🔗 Demo: [https://hollodk.github.io/beast-validator/](https://hollodk.github.io/beast-validator/)
 📁 Repo: [https://github.com/hollodk/beast-validator](https://github.com/hollodk/beast-validator)
 
