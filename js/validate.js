@@ -1,18 +1,49 @@
 class BeastFormValidator {
-    constructor(form, opt = {}) {
-        this.form = form;
+    constructor(formId, opt = {}) {
+        this.form = document.getElementById(formId);
+
         this.opt = opt;
         this.errorContainerClass = 'beast-error-msg';
-
-        // will make parent element relative
         this.tooltipClass = 'beast-tooltip';
+        this.focusFirst = true;
+        this.validateOnChange = true;
+        this.tooltips = false;
+        this.helperText = true;
+        this.shakeInput = true;
+
+        if (typeof(opt.errorContainerClass) != 'undefined') {
+            this.errorContainerClass = opt.errorContainerClass;
+        }
+
+        if (typeof(opt.focusFirst) != 'undefined') {
+            this.focusFirst = opt.focusFirst;
+        }
+
+        if (typeof(opt.validateOnChange) != 'undefined') {
+            this.validateOnChange = opt.validateOnChange;
+        }
+
+        if (typeof(opt.tooltips) != 'undefined') {
+            this.tooltips = opt.tooltips;
+        }
+
+        if (typeof(opt.helperText) != 'undefined') {
+            this.helperText = opt.helperText;
+        }
+
+        if (typeof(opt.shakeInput) != 'undefined') {
+            this.shakeInput = opt.shakeInput;
+        }
 
         this.attachListener();
 
-        if (opt.validateOnChange === true) {
-            this.getAllFields().forEach(field => {
-                field.dataset.beastId = this.randomString(8);
+        this.getAllFields().forEach(field => {
+            field.dataset.beastId = this.randomString(8);
+        });
 
+
+        if (this.validateOnChange === true) {
+            this.getAllFields().forEach(field => {
                 field.addEventListener('change', () => {
                     this.validateField(field);
                 });
@@ -50,7 +81,7 @@ class BeastFormValidator {
     }
 
     createTooltip(field, target, message) {
-        if (typeof(this.opt.tooltips) == 'undefined' || this.opt.tooltips == false) {
+        if (this.tooltips == false) {
             return;
         }
 
@@ -160,7 +191,7 @@ class BeastFormValidator {
 
         // Show errors
         if (!valid) {
-            if (typeof(this.opt.helperText) != 'undefined' && this.opt.helperText == true) {
+            if (this.helperText == true) {
                 if (customContainer && document.getElementById(customContainer)) {
                     document.getElementById(customContainer).textContent = errorMessage;
                     document.getElementById(customContainer).dataset.referenceId = field.dataset.beastId;
@@ -174,11 +205,10 @@ class BeastFormValidator {
                 }
             }
 
-
             field.dataset.dirty = 'dirty';
             this.createTooltip(field, errorTarget, errorMessage);
 
-            if (!typeof(this.opt.shakeInput) != 'undefined' && this.opt.shakeInput == true) {
+            if (this.shakeInput == true) {
                 field.classList.add('shake');
                 setTimeout(function() {
                     field.classList.remove('shake');
