@@ -30,20 +30,20 @@ BeastValidator helps validate HTML forms with native semantics (`required`, `typ
 ```html
 <script src="https://hollodk.github.io/beast-validator/beast-validator.js"></script>
 <link rel="stylesheet" href="https://hollodk.github.io/beast-validator/beast-validator.css">
-´´´
+```
 
 ### Option 2: Manual Download
 
 ```bash
 git clone https://github.com/hollodk/beast-validator.git
-´´´
+```
 
 Then include in your page:
 
 ```html
 <script src="/your-path/beast-validator.js"></script>
 <link rel="stylesheet" href="/your-path/beast-validator.css">
-´´´
+```
 
 > 📦 NPM and Composer packages are planned for future release.
 
@@ -72,7 +72,7 @@ Then include in your page:
 
   <button type="submit">Submit</button>
 </form>
-´´´
+```
 
 ### Initialization
 
@@ -85,8 +85,7 @@ new BeastValidator('myForm', {
     console.warn('Validation failed for:', fields);
   }
 });
-´´´
-
+```
 ---
 
 ## ⚙️ Options
@@ -102,8 +101,7 @@ new BeastValidator('myForm', {
   shakeInput: true,                        // Apply shake animation on error
   onFail: (fields) => {}                   // Callback with array of invalid fields
 }
-´´´
-
+```
 ---
 
 ## 🧷 Supported `data-` Attributes
@@ -139,7 +137,7 @@ Customize or override styles easily with CSS.
 
 ### Tooltip
 
-CSSSTART
+```css
 .beast-tooltip {
   background-color: #f44336;
   color: white;
@@ -152,20 +150,20 @@ CSSSTART
   transform: translateY(-5px);
   transition: opacity 0.2s ease-in-out;
 }
-CSSEND
+```
 
 ### Inline Error
 
-CSSSTART
+```css
 .beast-error-msg {
   color: red;
   text-decoration: underline;
 }
-CSSEND
+```
 
 ### Shake Animation
 
-CSSSTART
+```css
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-5px); }
@@ -174,7 +172,7 @@ CSSSTART
 .shake {
   animation: shake 0.5s ease-in-out;
 }
-CSSEND
+```
 
 ---
 
@@ -188,7 +186,7 @@ new BeastValidator('myForm', {
     alert(`You must fix ${invalidFields.length} fields.`);
   }
 });
-´´´
+```
 
 You can also manually call `validateField(field)` or `validate()` if needed.
 
@@ -214,7 +212,7 @@ We welcome contributions!
 ```bash
 # Clone and work locally
 git clone https://github.com/hollodk/beast-validator.git
-´´´
+```
 
 1. Fork this repo  
 2. Create a feature branch  
