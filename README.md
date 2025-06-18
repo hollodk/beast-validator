@@ -30,6 +30,7 @@ Just include the JavaScript class in your project and instantiate it on any form
 ```js
 const form = document.querySelector('#myForm');
 new BeastFormValidator(form);
+```
 
 ---
 
