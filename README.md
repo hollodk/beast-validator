@@ -106,14 +106,12 @@ new BeastValidator('myForm', {
 
 ## 🧷 Supported `data-` Attributes
 
-```data
 | Attribute              | Usage Example                          | Description                                      |
 |------------------------|----------------------------------------|--------------------------------------------------|
 | `data-pattern`         | `data-pattern="^[A-Z]{2}$"`            | Regex pattern for custom validation              |
 | `data-min`             | `data-min="2"`                         | Minimum checkboxes selected in a group           |
 | `data-error` _(todo)_  | `data-error="Your name is required"`   | Custom error message for the field _(planned)_   |
 | `data-error-container` | `data-error-container="customId"`      | Custom element to display error message          |
-```
 
 These attributes extend native validation without writing JS logic.
 
