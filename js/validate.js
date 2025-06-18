@@ -1,4 +1,4 @@
-class BeastFormValidator {
+class BeastValidator {
     constructor(formId, opt = {}) {
         this.form = document.getElementById(formId);
 

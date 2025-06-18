@@ -1,0 +1,20 @@
+{
+    "name": "hollodk/beastvalidator",
+    "description": "A DOM-powered JS form validator with tooltips, inline messages, and beautiful UX",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Michael Holm",
+            "email": "hollo@hollo.dk"
+        }
+    ],
+    "require": {},
+    "extra": {
+        "installer-paths": {
+            "public/vendor/{$name}/": ["type:library"]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

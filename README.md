@@ -1,6 +1,6 @@
-# 🧠 BeastFormValidator
+# 🧠 BeastValidator
 
-**BeastFormValidator** is a lightweight, extensible JavaScript form validator with zero dependencies.
+**BeastValidator** is a lightweight, extensible JavaScript form validator with zero dependencies.
 
 It works on all `<input>`, `<textarea>`, and `<select>` fields and supports advanced validation logic using native HTML5 attributes (`required`) and `data-*` attributes for additional control.
 
@@ -37,7 +37,7 @@ Just include the JavaScript class in your project and instantiate it on any form
 
 ```js
 const form = document.querySelector('#myForm');
-new BeastFormValidator(form);
+new BeastValidator(form);
 ```
 
 ---
@@ -98,14 +98,14 @@ You can use these attributes directly on your form fields to control how validat
 
 ```js
 const form = document.querySelector('#myForm');
-new BeastFormValidator(form);
+new BeastValidator(form);
 ```
 
 ---
 
 ## 🎨 Styling Errors
 
-BeastFormValidator displays error messages using the CSS class `.beast-error-msg`. You can customize this class in your stylesheet to match your branding or user interface.
+BeastValidator displays error messages using the CSS class `.beast-error-msg`. You can customize this class in your stylesheet to match your branding or user interface.
 
 ### Default CSS example:
 
@@ -121,7 +121,7 @@ BeastFormValidator displays error messages using the CSS class `.beast-error-msg
 
 ## 🔧 Extendability Ideas
 
-BeastFormValidator is built to be easily extendable and customizable.
+BeastValidator is built to be easily extendable and customizable.
 
 Here are some ideas for how you might enhance the core functionality to fit more advanced use cases:
 
@@ -185,7 +185,7 @@ Contributions are welcome and appreciated!
 
 ### Ways to contribute:
 
-- 🐞 Report bugs or issues via [GitHub Issues](https://github.com/your-username/beastformvalidator/issues)
+- 🐞 Report bugs or issues via [GitHub Issues](https://github.com/hollodk/beast-validator/issues)
 - 💡 Suggest new features or improvements
 - 🤝 Submit a pull request with enhancements
 - 🌍 Share the project with others who might find it useful
