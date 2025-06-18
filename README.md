@@ -6,6 +6,14 @@ It works on all `<input>`, `<textarea>`, and `<select>` fields and supports adva
 
 ---
 
+## 🌐 Live Demo
+
+Coming soon: [https://hollodk.github.io/beast-validator/](https://hollodk.github.io/beast-validator/)
+
+Want to contribute a CodePen, JSFiddle, or full demo site? Open a PR and let’s make it easier for others to try it out instantly!
+
+---
+
 ## 🚀 Features
 
 - ✅ Validates all `input`, `textarea`, and `select` elements
@@ -183,13 +191,5 @@ Contributions are welcome and appreciated!
 - 🌍 Share the project with others who might find it useful
 
 Let's build better, more user-friendly forms — together.
-
----
-
-## 🌐 Live Demo
-
-Coming soon: [https://your-demo-url.com](https://your-demo-url.com)
-
-Want to contribute a CodePen, JSFiddle, or full demo site? Open a PR and let’s make it easier for others to try it out instantly!
 
 ---
