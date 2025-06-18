@@ -52,6 +52,12 @@
                         <button type="submit" class="btn btn-primary w-100">Submit</button>
                     </form>
 
+                    <div class="card mt-4">
+                        <div class="card-body">
+                            <h4 class="mb-4">Debug</h4>
+                            <div id="debug"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -62,9 +68,18 @@
         <script src="//hollodk.github.io/beast-validator/js/validate.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', () => {
-                const validator = new BeastFormValidator('myForm');
+                const validator = new BeastFormValidator('myForm', {
+                    onFail: (failedFields) => {
+                        const debug = document.getElementById('debug');
+                        debug.innerHTML = '';
+
+                        failedFields.forEach(field => {
+                            const msg = 'Field failed, Name: '+field.name+' | Value:'+field.value;
+                            debug.innerHTML = debug.innerHTML+'<br>'+msg;
+                        });
+                    },
+                });
             });
         </script>
     </body>
 </html>
-

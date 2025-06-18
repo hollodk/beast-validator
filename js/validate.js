@@ -35,6 +35,12 @@ class BeastFormValidator {
             this.shakeInput = opt.shakeInput;
         }
 
+        if (typeof opt.onFail !== 'undefined') {
+            this.onFail = opt.onFail;
+        } else {
+            this.onFail = null;
+        }
+
         this.attachListener();
 
         this.getAllFields().forEach(field => {
@@ -110,6 +116,7 @@ class BeastFormValidator {
         const allFields = this.getAllFields();
         let isValid = true;
         let firstInvalid = null;
+        const failedFields = [];
 
         this.clearErrors();
         const seenRadioGroups = new Set();
@@ -122,15 +129,23 @@ class BeastFormValidator {
             if (type === 'radio') seenRadioGroups.add(name);
 
             const valid = this.validateField(field);
-            if (!valid && !firstInvalid) {
-                firstInvalid = field;
-                isValid = false;
+            if (!valid) {
+                failedFields.push(field);
+
+                if (!firstInvalid) {
+                    firstInvalid = field;
+                    isValid = false;
+                }
             }
         });
 
         if (!isValid && firstInvalid) {
             firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
             firstInvalid.focus({ preventScroll: true });
+
+            if (typeof this.onFail === 'function') {
+                this.onFail(failedFields);
+            }
         }
 
         return isValid;
