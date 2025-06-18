@@ -189,6 +189,15 @@ class BeastFormValidator {
             }
         }
 
+        // Email matching
+        if (type === 'email' && field.value) {
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(field.value)) {
+                valid = false;
+                errorMessage = 'Please enter a valid email address';
+            }
+        }
+
         // Show errors
         if (!valid) {
             if (this.helperText == true) {
