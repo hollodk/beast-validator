@@ -117,31 +117,31 @@ BeastFormValidator is built to be easily extendable and customizable.
 
 Here are some ideas for how you might enhance the core functionality to fit more advanced use cases:
 
-- **Custom data types**  
+- **Custom data types**
   Add support for `data-type="email"`, `"number"`, `"url"`, etc. for specialized format validation.
 
-- **Length validation**  
+- **Length validation**
   Use `data-minlength` and `data-maxlength` for character limits on text inputs and textareas.
 
-- **Range validation**  
+- **Range validation**
   Add `data-min` and `data-max` attributes for numeric or date inputs.
 
-- **Live validation**  
+- **Live validation**
   Trigger validation on `input`, `change`, or `blur` events for real-time feedback rather than just on submit.
 
-- **Custom error messages**  
+- **Custom error messages**
   Support `data-error-message` to let users override the default "This field is required" text.
 
-- **Multilingual support**  
+- **Multilingual support**
   Integrate language packs or dynamic translations for internationalized error messaging.
 
-- **Scroll to first error**  
+- **Scroll to first error**
   Automatically scroll the page to the first invalid field on submit.
 
-- **Plugin architecture**  
+- **Plugin architecture**
   Allow validators to be registered dynamically, enabling enterprise-level validation extensions.
 
-- **Field dependencies**  
+- **Field dependencies**
   Implement conditional validation based on the values of other fields (e.g., only required if another checkbox is checked).
 
 ---
