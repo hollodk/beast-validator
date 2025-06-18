@@ -81,6 +81,7 @@ You can use these attributes directly on your form fields to control how validat
 
   <button type="submit">Submit</button>
 </form>
+```
 
 ---
 
@@ -89,6 +90,7 @@ You can use these attributes directly on your form fields to control how validat
 ```js
 const form = document.querySelector('#myForm');
 new BeastFormValidator(form);
+```
 
 ---
 
@@ -104,6 +106,7 @@ BeastFormValidator displays error messages using the CSS class `.beast-error-msg
   font-size: 0.85em;
   margin-top: 4px;
 }
+```
 
 ---
 
