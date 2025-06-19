@@ -21,6 +21,7 @@ BeastValidator helps validate HTML forms with native semantics (`required`, `typ
 - 🧩 `onFail` callback returns all failed fields
 - 💡 Zero dependencies — pure JS!
 - Optional built-in wait for DOM event handler
+- Use form id or form object in constructor
 
 ---
 
@@ -132,12 +133,12 @@ new BeastValidator('myForm', {
 
 ## 🧷 Supported `data-` Attributes
 
-| Attribute              | Usage Example                          | Description                                      |
-|------------------------|----------------------------------------|--------------------------------------------------|
-| `data-pattern`         | `data-pattern="^[A-Z]{2}$"`            | Regex pattern for custom validation              |
-| `data-min`             | `data-min="2"`                         | Minimum checkboxes selected in a group           |
-| `data-error` _(todo)_  | `data-error="Your name is required"`   | Custom error message for the field _(planned)_   |
-| `data-error-container` | `data-error-container="customId"`      | Custom element to display error message          |
+| Attribute              | Usage Example                                | Description                                      |
+|------------------------|----------------------------------------------|--------------------------------------------------|
+| `data-pattern`         | `data-pattern="^[A-Z]{2}$"`                  | Regex pattern for custom validation              |
+| `data-min`             | `data-min="2"`                               | Minimum checkboxes selected in a group           |
+| `data-error-message    | `data-error.message="Your name is required"` | Custom error message for the field               |
+| `data-error-container` | `data-error-container="customId"`            | Custom element to display error message          |
 
 These attributes extend native validation without writing JS logic.
 
@@ -220,7 +221,7 @@ You can also manually call `validateField(field)` or `validate()` if needed.
 
 - [x] Scroll to first invalid field
 - [x] `data-error-container` for custom error placement
-- [ ] `data-error` for per-field messages
+- [x] `data-error-message` for per-field messages
 - [ ] Visual success indicators
 - [ ] Async/remote validation (e.g. unique email)
 - [ ] TypeScript types

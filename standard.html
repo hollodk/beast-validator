@@ -37,12 +37,18 @@
 
                         <div class="mb-3">
                             <label class="form-label">Name:</label>
-                            <input type="text" name="name" class="form-control" required>
+                            <input type="text" name="name" class="form-control" required data-error-message="Please enter your name">
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Email:</label>
                             <input type="email" name="email" class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Validate:</label>
+                            <input type="textl" name="validate" class="form-control" data-sleep="2" required>
+                            <small class="text-muted">data-sleep="2", wait for 2 seconds</small>
                         </div>
 
                         <div class="mb-3">

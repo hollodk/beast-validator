@@ -1,5 +1,5 @@
 class BeastValidator {
-    constructor(formId, opt = {}) {
+    constructor(form, opt = {}) {
         this.opt = opt;
         this.errorContainerClass = 'beast-error-msg';
         this.tooltipClass = 'beast-tooltip';
@@ -46,15 +46,19 @@ class BeastValidator {
 
         if (this.waitForDom == true) {
             document.addEventListener('DOMContentLoaded', () => {
-                this.boot(formId);
+                this.boot(form);
             });
         } else {
-            this.boot(formId);
+            this.boot(form);
         }
     }
 
-    boot(formId) {
-        this.form = document.getElementById(formId);
+    boot(form) {
+        if (typeof form === 'string') {
+            this.form = document.getElementById(form);
+        } else {
+            this.form = form;
+        }
 
         this.attachListener();
 
@@ -98,7 +102,7 @@ class BeastValidator {
             }
         });
 
-        document.querySelectorAll('.'+this.beastTooltipClass).forEach(el => el.remove());
+        document.querySelectorAll('.'+this.tooltipClass).forEach(el => el.remove());
     }
 
     createTooltip(field, target, message) {
@@ -175,7 +179,7 @@ class BeastValidator {
         const form = this.form;
 
         let valid = true;
-        let errorMessage = 'This field is required';
+        let errorMessage = field.dataset.errorMessage || 'This field is required';
         let errorTarget = field;
 
         this.clearErrorsFor(field);
@@ -228,6 +232,10 @@ class BeastValidator {
             }
         }
 
+        if (field.dataset.errorMessage) {
+            errorMessage = field.dataset.errorMessage;
+        }
+
         // Show errors
         if (!valid) {
             if (this.helperText == true) {
@@ -249,9 +257,9 @@ class BeastValidator {
 
             if (this.shakeInput == true) {
                 field.classList.add('shake');
-                setTimeout(function() {
+                field.addEventListener('animationend', () => {
                     field.classList.remove('shake');
-                }, 3000);
+                }, { once: true });
             }
         } else {
             delete field.dataset.dirty;
