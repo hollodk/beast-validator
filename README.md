@@ -124,6 +124,7 @@ new BeastValidator('myForm', {
   tooltips: true,                          // Enable tooltip messages
   helperText: true,                        // Show error message below field
   shakeInput: true,                        // Apply shake animation on error
+  waitForDom: true,                        // Let BeastValidator handle DOM ready event
   onFail: (fields) => {}                   // Callback with array of invalid fields
 }
 ```
