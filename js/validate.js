@@ -1,48 +1,26 @@
 class BeastValidator {
-    constructor(form, opt = {}) {
-        this.opt = opt;
-        this.errorContainerClass = 'beast-error-msg';
-        this.tooltipClass = 'beast-tooltip';
-        this.focusFirst = true;
-        this.validateOnChange = true;
-        this.tooltips = false;
-        this.helperText = true;
-        this.shakeInput = true;
-        this.waitForDom = true;
+    constructor(form, {
+        errorContainerClass = 'beast-error-msg',
+        tooltipClass = 'beast-tooltip',
+        focusFirst = true,
+        validateOnChange = true,
+        tooltips = false,
+        helperText = true,
+        shakeInput = true,
+        waitForDom = true,
+        onFail = null,
+    } = {}) {
+        this.errorContainerClass = errorContainerClass;
+        this.tooltipClass = tooltipClass;
+        this.focusFirst = focusFirst;
+        this.validateOnChange = validateOnChange;
+        this.tooltips = tooltips;
+        this.helperText = helperText;
+        this.shakeInput = shakeInput;
+        this.waitForDom = waitForDom;
+        this.onFail = onFail;
 
-        if (typeof(opt.errorContainerClass) != 'undefined') {
-            this.errorContainerClass = opt.errorContainerClass;
-        }
-
-        if (typeof(opt.focusFirst) != 'undefined') {
-            this.focusFirst = opt.focusFirst;
-        }
-
-        if (typeof(opt.validateOnChange) != 'undefined') {
-            this.validateOnChange = opt.validateOnChange;
-        }
-
-        if (typeof(opt.tooltips) != 'undefined') {
-            this.tooltips = opt.tooltips;
-        }
-
-        if (typeof(opt.helperText) != 'undefined') {
-            this.helperText = opt.helperText;
-        }
-
-        if (typeof(opt.shakeInput) != 'undefined') {
-            this.shakeInput = opt.shakeInput;
-        }
-
-        if (typeof(opt.waitForDom) != 'undefined') {
-            this.waitForDom = opt.waitForDom;
-        }
-
-        if (typeof opt.onFail !== 'undefined') {
-            this.onFail = opt.onFail;
-        } else {
-            this.onFail = null;
-        }
+        this.form = null;
 
         if (this.waitForDom == true) {
             document.addEventListener('DOMContentLoaded', () => {
