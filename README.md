@@ -225,6 +225,7 @@ You can also manually call `validateField(field)` or `validate()` if needed.
 - [ ] TypeScript types
 - [x] NPM + Composer package
 - [ ] `reset()` method to clear validation state
+- [ ] Keep structured files for packagist, npm and github pages
 
 ---
 
