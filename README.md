@@ -20,6 +20,7 @@ BeastValidator helps validate HTML forms with native semantics (`required`, `typ
 - ⬇️ Scrolls and focuses the first invalid field
 - 🧩 `onFail` callback returns all failed fields
 - 💡 Zero dependencies — pure JS!
+- Optional built-in wait for DOM event handler
 
 ---
 

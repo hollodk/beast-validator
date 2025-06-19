@@ -9,8 +9,18 @@
 
         <!--
         <link href="./css/style.css" rel="stylesheet">
+        <script src="./js/validate.js"></script>
         -->
+
         <link href="//hollodk.github.io/beast-validator/css/style.css" rel="stylesheet">
+        <script src="//hollodk.github.io/beast-validator/js/validate.js"></script>
+        <script>
+            new BeastValidator('myForm', {
+                tooltips: true,
+                helperText: false,
+                shakeInput: false,
+            });
+        </script>
     </head>
     <body class="bg-light py-5">
 
@@ -83,20 +93,6 @@
                 </div>
             </div>
         </div>
-
-        <!--
-        <script src="./js/validate.js"></script>
-        -->
-        <script src="//hollodk.github.io/beast-validator/js/validate.js"></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                const validator = new BeastValidator('myForm', {
-                    tooltips: true,
-                    helperText: false,
-                    shakeInput: false,
-                });
-            });
-        </script>
     </body>
 </html>
 

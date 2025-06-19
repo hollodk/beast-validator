@@ -1,7 +1,5 @@
 class BeastValidator {
     constructor(formId, opt = {}) {
-        this.form = document.getElementById(formId);
-
         this.opt = opt;
         this.errorContainerClass = 'beast-error-msg';
         this.tooltipClass = 'beast-tooltip';
@@ -10,6 +8,7 @@ class BeastValidator {
         this.tooltips = false;
         this.helperText = true;
         this.shakeInput = true;
+        this.waitForDom = true;
 
         if (typeof(opt.errorContainerClass) != 'undefined') {
             this.errorContainerClass = opt.errorContainerClass;
@@ -35,11 +34,27 @@ class BeastValidator {
             this.shakeInput = opt.shakeInput;
         }
 
+        if (typeof(opt.waitForDom) != 'undefined') {
+            this.waitForDom = opt.waitForDom;
+        }
+
         if (typeof opt.onFail !== 'undefined') {
             this.onFail = opt.onFail;
         } else {
             this.onFail = null;
         }
+
+        if (this.waitForDom == true) {
+            document.addEventListener('DOMContentLoaded', () => {
+                this.boot(formId);
+            });
+        } else {
+            this.boot(formId);
+        }
+    }
+
+    boot(formId) {
+        this.form = document.getElementById(formId);
 
         this.attachListener();
 
