@@ -19,9 +19,13 @@ BeastValidator helps validate HTML forms with native semantics (`required`, `typ
 - 💥 Shake animation on error
 - ⬇️ Scrolls and focuses the first invalid field
 - 🧩 `onFail` callback returns all failed fields
+- 🧩 `onSuccess` callback when for is valid
+- 🧩 `onInit` callback when BeastValidator is initialized
 - 💡 Zero dependencies — pure JS!
 - Optional built-in wait for DOM event handler
 - Use form id or form object in constructor
+- Shortcut to hide and show elements
+- Minimalistic step wizard for showing different sections
 
 ---
 
@@ -109,7 +113,7 @@ new BeastValidator('myForm', {
   focusFirst: true,
   onFail: (fields) => {
     console.warn('Validation failed for:', fields);
-  }
+  },
 });
 ```
 ---
@@ -129,6 +133,8 @@ new BeastValidator('myForm', {
   debug: false,                            // Enable debugging to see whats really going on
   setNoValidate: true,                     // Set novalidate for form
   onFail: (fields) => {}                   // Callback with array of invalid fields
+  onSuccess: () => {}                      // Callback when form is successful
+  onInit: () => {}                         // Callback when BeastValidator is initialized
 }
 ```
 ---
@@ -207,13 +213,20 @@ Customize or override styles easily with CSS.
 
 ## 🧩 Extendability
 
-Hook into failed validations with `onFail`:
+Hook into failed validations with `onFail`, `onSuccess` and `onInit`:
 
 ```js
 new BeastValidator('myForm', {
+  onInit: () => {
+    alert(`BeastValidator is ready.`);
+  }
   onFail: (invalidFields) => {
     alert(`You must fix ${invalidFields.length} fields.`);
   }
+  onSuccess: () => {
+    alert(`Your entry is successful.`);
+  }
+
 });
 ```
 

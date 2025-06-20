@@ -9,8 +9,12 @@ class BeastValidator {
         shakeInput = true,
         waitForDom = true,
         setNoValidate = true,
+        autoSubmit = true,
+        initSteps = false,
         debug = false,
         onFail = null,
+        onSuccess = null,
+        onInit = null,
     } = {}) {
         this.errorContainerClass = errorContainerClass;
         this.tooltipClass = tooltipClass;
@@ -21,8 +25,12 @@ class BeastValidator {
         this.shakeInput = shakeInput;
         this.waitForDom = waitForDom;
         this.setNoValidate = setNoValidate,
+        this.autoSubmit = autoSubmit,
+        this.initSteps = initSteps,
         this.debug = debug,
         this.onFail = onFail;
+        this.onSuccess = onSuccess;
+        this.onInit = onInit;
 
         this.form = null;
 
@@ -64,6 +72,15 @@ class BeastValidator {
                 });
             });
         }
+
+        if (this.initSteps == true) {
+            this.currentStep = 1;
+            this.showStep(this.currentStep);
+        }
+
+        if (typeof this.onInit === 'function') {
+            this.onInit();
+        }
     }
 
     attachListener() {
@@ -82,15 +99,24 @@ class BeastValidator {
 
             if (result) {
                 this.log('form is valid, submitting manually');
-                this.form.submit();
+
+                if (this.autoSubmit == true) {
+                    this.form.submit();
+                } else {
+                    this.activateButton(submitBtn);
+                }
             } else {
                 this.log('form is invalid');
-                submitBtn.disabled = false;
-                submitBtn.textContent = submitBtn.dataset.originalText;
+                this.activateButton(submitBtn);
             }
 
             this.log('submit end');
         });
+    }
+
+    activateButton(submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = submitBtn.dataset.originalText;
     }
 
     getAllFields() {
@@ -173,6 +199,12 @@ class BeastValidator {
 
             if (typeof this.onFail === 'function') {
                 this.onFail(failedFields);
+            }
+        }
+
+        if (isValid) {
+            if (typeof this.onSuccess === 'function') {
+                this.onSuccess();
             }
         }
 
@@ -338,5 +370,28 @@ class BeastValidator {
         if (this.debug == true) {
             console.log(message);
         }
+    }
+
+    showStep(stepNumber) {
+        const sections = document.querySelectorAll('[data-step]');
+
+        sections.forEach(section => {
+            const step = parseInt(section.dataset.step, 10);
+            if (step === stepNumber) {
+                section.style.display = 'block';
+            } else {
+                section.style.display = 'none';
+            }
+        });
+
+        this.currentStep = stepNumber;
+    }
+
+    nextStep() {
+        this.showStep(this.currentStep + 1);
+    }
+
+    prevStep() {
+        this.showStep(this.currentStep - 1);
     }
 }
