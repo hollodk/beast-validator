@@ -8,6 +8,7 @@ class BeastValidator {
         helperText = true,
         shakeInput = true,
         waitForDom = true,
+        setNoValidate = true,
         onFail = null,
     } = {}) {
         this.errorContainerClass = errorContainerClass;
@@ -18,35 +19,40 @@ class BeastValidator {
         this.helperText = helperText;
         this.shakeInput = shakeInput;
         this.waitForDom = waitForDom;
+        this.setNoValidate = setNoValidate,
         this.onFail = onFail;
 
         this.form = null;
 
         if (this.waitForDom == true) {
             document.addEventListener('DOMContentLoaded', () => {
-                this.boot(form);
+                this.initialize(form);
             });
         } else {
-            this.boot(form);
+            this.initialize(form);
         }
     }
 
-    boot(form) {
+    initialize(form) {
         if (typeof form === 'string') {
             this.form = document.getElementById(form);
         } else {
             this.form = form;
         }
 
+        this.form.setAttribute('novalidate', 'true');
+
         this.attachListener();
 
-        this.getAllFields().forEach(field => {
+        const allFields = this.getAllFields();
+
+        allFields.forEach(field => {
             field.dataset.beastId = this.randomString(8);
         });
 
 
         if (this.validateOnChange === true) {
-            this.getAllFields().forEach(field => {
+            allFields.forEach(field => {
                 field.addEventListener('change', () => {
                     this.validateField(field);
                 });
@@ -247,7 +253,12 @@ class BeastValidator {
     }
 
     clearErrorsFor(field) {
-        const items = document.querySelectorAll('[name="'+field.name+'"]');
+        let items = [];
+        if (field.name) {
+            items = document.querySelectorAll('[name="'+field.name+'"]');
+        } else {
+            items.push(field);
+        }
 
         items.forEach((item) => {
             const beastId = item.dataset.beastId;
