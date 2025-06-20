@@ -9,6 +9,7 @@ class BeastValidator {
         shakeInput = true,
         waitForDom = true,
         setNoValidate = true,
+        debug = false,
         onFail = null,
     } = {}) {
         this.errorContainerClass = errorContainerClass;
@@ -20,6 +21,7 @@ class BeastValidator {
         this.shakeInput = shakeInput;
         this.waitForDom = waitForDom;
         this.setNoValidate = setNoValidate,
+        this.debug = debug,
         this.onFail = onFail;
 
         this.form = null;
@@ -50,7 +52,6 @@ class BeastValidator {
             field.dataset.beastId = this.randomString(8);
         });
 
-
         if (this.validateOnChange === true) {
             allFields.forEach(field => {
                 field.addEventListener('change', () => {
@@ -66,10 +67,29 @@ class BeastValidator {
     }
 
     attachListener() {
-        this.form.addEventListener('submit', (e) => {
-            if (!this.validate()) {
-                e.preventDefault();
+        this.form.addEventListener('submit', async (e) => {
+            this.log('submit start');
+            e.preventDefault();
+
+            const submitBtn = this.form.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.dataset.originalText = submitBtn.innerHTML;
+            submitBtn.textContent = 'Validating...';
+
+            this.log('validation process');
+            const result = await this.validate();
+            this.log('got a result');
+
+            if (result) {
+                this.log('form is valid, submitting manually');
+                this.form.submit();
+            } else {
+                this.log('form is invalid');
+                submitBtn.disabled = false;
+                submitBtn.textContent = submitBtn.dataset.originalText;
             }
+
+            this.log('submit end');
         });
     }
 
@@ -115,7 +135,9 @@ class BeastValidator {
         container.appendChild(tooltip);
     }
 
-    validate() {
+    async validate() {
+        this.log('start validation');
+
         const allFields = this.getAllFields();
         let isValid = true;
         let firstInvalid = null;
@@ -124,23 +146,26 @@ class BeastValidator {
         this.clearErrors();
         const seenRadioGroups = new Set();
 
-        allFields.forEach(field => {
+        const validations = Array.from(allFields).map(async (field) => {
             const type = field.type;
             const name = field.name;
+
+            this.log('validating '+name+', type: '+type);
 
             if (type === 'radio' && seenRadioGroups.has(name)) return;
             if (type === 'radio') seenRadioGroups.add(name);
 
-            const valid = this.validateField(field);
+            const valid = await this.validateField(field);
             if (!valid) {
                 failedFields.push(field);
-
-                if (!firstInvalid) {
-                    firstInvalid = field;
-                    isValid = false;
-                }
+                if (!firstInvalid) firstInvalid = field;
+                isValid = false;
             }
         });
+
+        this.log('starting to run validations');
+        await Promise.all(validations);
+        this.log('done running validations');
 
         if (!isValid && firstInvalid) {
             firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -154,7 +179,7 @@ class BeastValidator {
         return isValid;
     }
 
-    validateField(field) {
+    async validateField(field) {
         const type = field.type;
         const name = field.name;
         const isRequired = field.hasAttribute('required');
@@ -162,11 +187,21 @@ class BeastValidator {
         const errorClass = this.errorContainerClass;
         const form = this.form;
 
+        this.log('validate field: '+name);
+
         let valid = true;
         let errorMessage = field.dataset.errorMessage || 'This field is required';
         let errorTarget = field;
 
         this.clearErrorsFor(field);
+        field.classList.add('validating');
+
+        const sleep = parseFloat(field.dataset.sleep || '0');
+        if (sleep > 0) {
+            this.log('start sleep for seconds: '+sleep);
+            await new Promise(resolve => setTimeout(resolve, sleep * 1000));
+            this.log('done sleeping');
+        }
 
         // Required checks
         if (isRequired) {
@@ -216,6 +251,16 @@ class BeastValidator {
             }
         }
 
+        if (field.dataset.async === 'true') {
+            const value = field.value;
+            const isFakeValid = value !== 'taken'; // Simulate server call
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate delay
+            if (!isFakeValid) {
+                errorMessage = 'Value is already taken';
+                valid = false;
+            }
+        }
+
         if (field.dataset.errorMessage) {
             errorMessage = field.dataset.errorMessage;
         }
@@ -248,6 +293,8 @@ class BeastValidator {
         } else {
             delete field.dataset.dirty;
         }
+
+        field.classList.remove('validating');
 
         return valid;
     }
@@ -285,5 +332,11 @@ class BeastValidator {
             result += letters.charAt(Math.floor(Math.random() * letters.length));
         }
         return result;
+    }
+
+    log(message) {
+        if (this.debug == true) {
+            console.log(message);
+        }
     }
 }

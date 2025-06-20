@@ -126,6 +126,7 @@ new BeastValidator('myForm', {
   helperText: true,                        // Show error message below field
   shakeInput: true,                        // Apply shake animation on error
   waitForDom: true,                        // Let BeastValidator handle DOM ready event
+  debug: false,                            // Enable debugging to see whats really going on
   setNoValidate: true,                     // Set novalidate for form
   onFail: (fields) => {}                   // Callback with array of invalid fields
 }
@@ -138,6 +139,7 @@ new BeastValidator('myForm', {
 |------------------------|----------------------------------------------|--------------------------------------------------|
 | `data-pattern`         | `data-pattern="^[A-Z]{2}$"`                  | Regex pattern for custom validation              |
 | `data-min`             | `data-min="2"`                               | Minimum checkboxes selected in a group           |
+| `data-sleep`           | `data-sleep="2"`                             | Sleep 2 seconds, to look important               |
 | `data-error-message    | `data-error.message="Your name is required"` | Custom error message for the field               |
 | `data-error-container` | `data-error-container="customId"`            | Custom element to display error message          |
 
@@ -153,6 +155,7 @@ BeastValidator respects and extends:
 - `type="email"`: Built-in email validation
 - `data-pattern`: Validates against custom RegEx
 - `data-min`: Applies to checkbox groups
+- `data-sleep`: Sleep to look important
 - `radio` buttons: Automatically grouped by `name` and validated
 
 ---
