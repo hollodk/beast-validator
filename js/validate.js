@@ -24,17 +24,20 @@ class BeastValidator {
         this.helperText = helperText;
         this.shakeInput = shakeInput;
         this.waitForDom = waitForDom;
-        this.setNoValidate = setNoValidate,
-        this.autoSubmit = autoSubmit,
-        this.initSteps = initSteps,
-        this.debug = debug,
+        this.setNoValidate = setNoValidate;
+        this.autoSubmit = autoSubmit;
+        this.initSteps = initSteps;
+        this.debug = debug;
         this.onFail = onFail;
         this.onSuccess = onSuccess;
         this.onInit = onInit;
 
         this.form = null;
+        this.customValidators = {};
 
-        if (this.waitForDom == true) {
+        this.log('[INIT] BeastValidator instantiated');
+
+        if (this.waitForDom === true) {
             document.addEventListener('DOMContentLoaded', () => {
                 this.initialize(form);
             });
@@ -44,79 +47,89 @@ class BeastValidator {
     }
 
     initialize(form) {
-        if (typeof form === 'string') {
-            this.form = document.getElementById(form);
-        } else {
-            this.form = form;
-        }
+        this.log('[INIT] Initializing validator');
 
-        this.form.setAttribute('novalidate', 'true');
+        this.form = typeof form === 'string' ? document.getElementById(form) : form;
+
+        if (this.setNoValidate) {
+            this.form.setAttribute('novalidate', 'true');
+        }
 
         this.attachListener();
 
         const allFields = this.getAllFields();
+        this.log(`[INIT] Found ${allFields.length} fields`);
 
         allFields.forEach(field => {
-            field.dataset.beastId = this.randomString(8);
+            if (field.name) {
+                field.dataset.beastId = field.name;
+            } else {
+                field.dataset.beastId = this.randomString(8);
+            }
         });
 
-        if (this.validateOnChange === true) {
+        if (this.validateOnChange) {
             allFields.forEach(field => {
                 field.addEventListener('change', () => {
+                    this.log(`[EVENT] Change detected on "${field.name}"`);
                     this.validateField(field);
                 });
                 field.addEventListener('input', () => {
-                    if (field.dataset.dirty == 'dirty') {
+                    if (field.dataset.dirty === 'dirty') {
+                        this.log(`[EVENT] Input on dirty field "${field.name}"`);
                         this.validateField(field);
                     }
                 });
             });
         }
 
-        if (this.initSteps == true) {
+        if (this.initSteps === true) {
             this.currentStep = 1;
             this.showStep(this.currentStep);
+            this.log('[INIT] Step flow initialized');
         }
 
         if (typeof this.onInit === 'function') {
+            this.log('[INIT] onInit callback triggered');
             this.onInit();
         }
     }
 
     attachListener() {
         this.form.addEventListener('submit', async (e) => {
-            this.log('submit start');
+            this.log('[EVENT] Submit triggered');
             e.preventDefault();
 
             const submitBtn = this.form.querySelector('button[type="submit"]');
-            submitBtn.disabled = true;
-            submitBtn.dataset.originalText = submitBtn.innerHTML;
-            submitBtn.textContent = 'Validating...';
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.dataset.originalText = submitBtn.innerHTML;
+                submitBtn.textContent = 'Validating...';
+            }
 
-            this.log('validation process');
+            this.log('[VALIDATION] Starting form validation');
             const result = await this.validate();
-            this.log('got a result');
+            this.log(`[VALIDATION] Validation result: ${result}`);
 
             if (result) {
-                this.log('form is valid, submitting manually');
-
-                if (this.autoSubmit == true) {
+                this.log('[EVENT] Form valid. Proceeding to submission.');
+                if (this.autoSubmit) {
                     this.form.submit();
                 } else {
                     this.activateButton(submitBtn);
                 }
             } else {
-                this.log('form is invalid');
+                this.log('[EVENT] Form invalid. Submission aborted.');
                 this.activateButton(submitBtn);
             }
-
-            this.log('submit end');
         });
     }
 
     activateButton(submitBtn) {
-        submitBtn.disabled = false;
-        submitBtn.textContent = submitBtn.dataset.originalText;
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = submitBtn.dataset.originalText;
+        }
     }
 
     getAllFields() {
@@ -124,21 +137,16 @@ class BeastValidator {
     }
 
     clearErrors() {
+        this.log('[VALIDATION] Clearing all error messages');
         this.form.querySelectorAll(`.${this.errorContainerClass}`).forEach(el => {
-            if (el.id) {
-                el.innerHTML = '';
-            } else {
-                el.remove();
-            }
+            el.id ? el.innerHTML = '' : el.remove();
         });
 
-        document.querySelectorAll('.'+this.tooltipClass).forEach(el => el.remove());
+        document.querySelectorAll('.' + this.tooltipClass).forEach(el => el.remove());
     }
 
     createTooltip(field, target, message) {
-        if (this.tooltips == false) {
-            return;
-        }
+        if (!this.tooltips) return;
 
         const container = target.parentElement;
         if (getComputedStyle(container).position === 'static') {
@@ -150,11 +158,9 @@ class BeastValidator {
         tooltip.textContent = message;
         tooltip.dataset.referenceId = field.dataset.beastId;
 
-        const rect = target.getBoundingClientRect();
         tooltip.style.position = 'absolute';
         tooltip.style.left = '0';
         tooltip.style.top = '-30px';
-
         tooltip.style.zIndex = '9999';
         tooltip.style.pointerEvents = 'none';
 
@@ -162,26 +168,25 @@ class BeastValidator {
     }
 
     async validate() {
-        this.log('start validation');
-
+        this.log('[VALIDATION] Running validate()');
         const allFields = this.getAllFields();
+        const seenRadioGroups = new Set();
         let isValid = true;
         let firstInvalid = null;
         const failedFields = [];
 
         this.clearErrors();
-        const seenRadioGroups = new Set();
 
         const validations = Array.from(allFields).map(async (field) => {
             const type = field.type;
             const name = field.name;
 
-            this.log('validating '+name+', type: '+type);
-
             if (type === 'radio' && seenRadioGroups.has(name)) return;
             if (type === 'radio') seenRadioGroups.add(name);
 
             const valid = await this.validateField(field);
+            this.log(`[VALIDATION] Field "${name}" valid: ${valid}`);
+
             if (!valid) {
                 failedFields.push(field);
                 if (!firstInvalid) firstInvalid = field;
@@ -189,59 +194,46 @@ class BeastValidator {
             }
         });
 
-        this.log('starting to run validations');
         await Promise.all(validations);
-        this.log('done running validations');
 
         if (!isValid && firstInvalid) {
+            this.log('[VALIDATION] Invalid fields detected');
             firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
             firstInvalid.focus({ preventScroll: true });
-
             if (typeof this.onFail === 'function') {
                 this.onFail(failedFields);
             }
-        }
-
-        if (isValid) {
-            if (typeof this.onSuccess === 'function') {
-                this.onSuccess();
-            }
+        } else if (isValid && typeof this.onSuccess === 'function') {
+            this.onSuccess();
         }
 
         return isValid;
     }
 
     async validateField(field) {
-        const type = field.type;
         const name = field.name;
+        const type = field.type;
         const isRequired = field.hasAttribute('required');
-        const customContainer = field.dataset.errorContainer;
-        const errorClass = this.errorContainerClass;
         const form = this.form;
-
-        this.log('validate field: '+name);
-
         let valid = true;
         let errorMessage = field.dataset.errorMessage || 'This field is required';
         let errorTarget = field;
 
+        this.log(`[VALIDATION] Validating field "${name}", type "${type}"`);
         this.clearErrorsFor(field);
         field.classList.add('validating');
 
         const sleep = parseFloat(field.dataset.sleep || '0');
         if (sleep > 0) {
-            this.log('start sleep for seconds: '+sleep);
+            this.log(`[ASYNC] Sleeping for ${sleep}s`);
             await new Promise(resolve => setTimeout(resolve, sleep * 1000));
-            this.log('done sleeping');
         }
 
-        // Required checks
         if (isRequired) {
             if (type === 'checkbox') {
                 valid = field.checked;
             } else if (type === 'radio') {
-                const checked = !!form.querySelector(`input[type="radio"][name="${name}"]:checked`);
-                valid = checked;
+                valid = !!form.querySelector(`input[type="radio"][name="${name}"]:checked`);
                 const radios = form.querySelectorAll(`input[type="radio"][name="${name}"]`);
                 errorTarget = radios[radios.length - 1];
             } else if (type === 'file') {
@@ -249,23 +241,20 @@ class BeastValidator {
             } else {
                 valid = field.value.trim() !== '';
             }
-
             if (!valid) errorMessage = 'This field is required';
         }
 
-        // Min checkbox group count
         if (type === 'checkbox' && field.dataset.min) {
             const boxes = form.querySelectorAll(`input[type="checkbox"][name="${name}"]`);
-            const count = Array.from(boxes).filter(c => c.checked).length;
+            const checkedCount = Array.from(boxes).filter(b => b.checked).length;
             const min = parseInt(field.dataset.min, 10);
-            valid = count >= min;
+            valid = checkedCount >= min;
             if (!valid) {
-                errorTarget = boxes[boxes.length - 1];
                 errorMessage = `Select at least ${min}`;
+                errorTarget = boxes[boxes.length - 1];
             }
         }
 
-        // Pattern matching
         if (field.dataset.pattern && field.value) {
             const regex = new RegExp(field.dataset.pattern);
             if (!regex.test(field.value)) {
@@ -274,7 +263,30 @@ class BeastValidator {
             }
         }
 
-        // Email matching
+        if (field.dataset.match && field.value) {
+            const otherField = this.form.querySelector(`[name="${field.dataset.match}"]`);
+            if (otherField && otherField.value !== field.value) {
+                valid = false;
+                errorMessage = 'Values do not match';
+            }
+        }
+
+        if (field.hasAttribute('minlength') && field.value) {
+            const minLength = parseInt(field.getAttribute('minlength'), 10);
+            if (field.value.length < minLength) {
+                valid = false;
+                errorMessage = `Minimum length is ${minLength} characters`;
+            }
+        }
+
+        if (field.hasAttribute('maxlength') && field.value) {
+            const maxLength = parseInt(field.getAttribute('maxlength'), 10);
+            if (field.value.length > maxLength) {
+                valid = false;
+                errorMessage = `Maximum length is ${maxLength} characters`;
+            }
+        }
+
         if (type === 'email' && field.value) {
             const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailPattern.test(field.value)) {
@@ -284,39 +296,56 @@ class BeastValidator {
         }
 
         if (field.dataset.async === 'true') {
-            const value = field.value;
-            const isFakeValid = value !== 'taken'; // Simulate server call
-            await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate delay
+            this.log(`[ASYNC] Simulating async validation for field "${name}"`);
+            const isFakeValid = field.value !== 'taken';
+            await new Promise(resolve => setTimeout(resolve, 1000));
             if (!isFakeValid) {
                 errorMessage = 'Value is already taken';
                 valid = false;
             }
         }
 
-        if (field.dataset.errorMessage) {
-            errorMessage = field.dataset.errorMessage;
+        if (field.dataset.validator) {
+            const validatorName = field.dataset.validator;
+            const validatorFn = this.customValidators[validatorName];
+
+            if (typeof validatorFn === 'function') {
+                const result = await validatorFn(field);
+                if (result !== true) {
+                    valid = false;
+                    errorMessage = typeof result === 'string' ? result : 'Invalid value';
+                }
+            } else {
+                this.log(`[WARN] Custom validator "${validatorName}" not found`);
+            }
         }
 
-        // Show errors
         if (!valid) {
-            if (this.helperText == true) {
-                if (customContainer && document.getElementById(customContainer)) {
-                    document.getElementById(customContainer).textContent = errorMessage;
-                    document.getElementById(customContainer).dataset.referenceId = field.dataset.beastId;
-
-                } else {
-                    const error = document.createElement('div');
-                    error.dataset.referenceId = field.dataset.beastId;
-                    error.className = errorClass;
-                    error.textContent = errorMessage;
-                    errorTarget.insertAdjacentElement('afterend', error);
-                }
+            if (field.dataset.errorMessage) {
+                errorMessage = field.dataset.errorMessage;
             }
 
             field.dataset.dirty = 'dirty';
             this.createTooltip(field, errorTarget, errorMessage);
 
-            if (this.shakeInput == true) {
+            if (this.helperText) {
+                const containerId = field.dataset.errorContainer;
+                if (containerId && document.getElementById(containerId)) {
+                    const container = document.getElementById(containerId);
+                    container.textContent = errorMessage;
+                    container.dataset.referenceId = field.dataset.beastId;
+                } else {
+                    this.clearErrorsFor(field);
+
+                    const error = document.createElement('div');
+                    error.className = this.errorContainerClass;
+                    error.dataset.referenceId = field.dataset.beastId;
+                    error.textContent = errorMessage;
+                    errorTarget.insertAdjacentElement('afterend', error);
+                }
+            }
+
+            if (this.shakeInput) {
                 field.classList.add('shake');
                 field.addEventListener('animationend', () => {
                     field.classList.remove('shake');
@@ -327,64 +356,46 @@ class BeastValidator {
         }
 
         field.classList.remove('validating');
-
         return valid;
     }
 
     clearErrorsFor(field) {
-        let items = [];
-        if (field.name) {
-            items = document.querySelectorAll('[name="'+field.name+'"]');
-        } else {
-            items.push(field);
-        }
+        const beastId = field.dataset.beastId;
+        const related = document.querySelectorAll(`[data-reference-id="${beastId}"]`);
 
-        items.forEach((item) => {
-            const beastId = item.dataset.beastId;
-            const tooltips = document.querySelectorAll('[data-reference-id="'+beastId+'"]');
-
-            tooltips.forEach(tooltip => {
-                if (tooltip.classList.contains(this.tooltipClass)) {
-                    tooltip.remove();
-                } else {
-                    if (tooltip.id) {
-                        tooltip.innerHTML = '';
-                    } else {
-                        tooltip.remove();
-                    }
-                }
-            });
+        related.forEach(el => {
+            if (el.classList.contains(this.tooltipClass)) {
+                el.remove();
+            } else if (el.id) {
+                el.innerHTML = '';
+            } else {
+                el.remove();
+            }
         });
     }
 
     randomString(length = 8) {
         const letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        let result = '';
-        for (let i = 0; i < length; i++) {
-            result += letters.charAt(Math.floor(Math.random() * letters.length));
-        }
-        return result;
+        return Array.from({ length }, () =>
+            letters.charAt(Math.floor(Math.random() * letters.length))
+        ).join('');
     }
 
-    log(message) {
-        if (this.debug == true) {
-            console.log(message);
+    log(message, level = 'DEBUG') {
+        if (this.debug === true) {
+            const timestamp = new Date().toISOString().split('T')[1].split('.')[0];
+            console.log(`[${timestamp}] [${level}] ${message}`);
         }
     }
 
     showStep(stepNumber) {
         const sections = document.querySelectorAll('[data-step]');
-
         sections.forEach(section => {
             const step = parseInt(section.dataset.step, 10);
-            if (step === stepNumber) {
-                section.style.display = 'block';
-            } else {
-                section.style.display = 'none';
-            }
+            section.style.display = step === stepNumber ? 'block' : 'none';
         });
-
         this.currentStep = stepNumber;
+        this.log(`[STEP] Showing step ${stepNumber}`);
     }
 
     nextStep() {
@@ -393,5 +404,18 @@ class BeastValidator {
 
     prevStep() {
         this.showStep(this.currentStep - 1);
+    }
+
+    reset() {
+        // also clear all dirty
+        this.clearErrors();
+
+        this.form.querySelectorAll('[data-dirty="dirty"]').forEach((field) => {
+            delete field.dataset.dirty;
+        });
+    }
+
+    addValidator(name, fn) {
+        this.customValidators[name] = fn;
     }
 }

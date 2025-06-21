@@ -2,64 +2,241 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>BeastValidator Bootstrap Example</title>
+        <title>BeastValidator Demo</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            body {
+                padding-top: 60px;
+            }
+            .sidebar {
+                height: 100vh;
+                position: sticky;
+                top: 0;
+            }
+            .code-block {
+                background: #f8f9fa;
+                padding: 1rem;
+                border-radius: 5px;
+                font-family: monospace;
+            }
+        </style>
 
         <link href="./css/style.css" rel="stylesheet">
         <script src="./js/validate.js"></script>
 
         <link href="//hollodk.github.io/beast-validator/css/style.css" rel="stylesheet">
         <script src="//hollodk.github.io/beast-validator/js/validate.js"></script>
-        <script>
-            new BeastValidator('myForm', {
-            });
-        </script>
     </head>
-    <body class="bg-light py-5">
+    <body>
 
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-md-8 col-lg-6">
-
-                    <p>See other samples</p>
-                    <ul>
-                        <li><a href="index.html">Simple</a></li>
-                        <li><a href="standard.html">Standard</a></li>
-                        <li><a href="tooltips.html">Tooltips</a></li>
-                        <li><a href="callback.html">Callback</a></li>
+        <div class="container-fluid">
+            <div class="row">
+                <nav class="col-md-2 d-none d-md-block bg-light sidebar p-3">
+                    <h4>📘 Menu</h4>
+                    <ul class="nav flex-column">
+                        <li class="nav-item"><a class="nav-link" href="#demo">🚀 Basic Demo</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#steps">🧭 Step Form</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#advanced-demo">🔍Advanced Demo</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#install">📦 Install</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#features">✨ Features</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#code">💡 Code</a></li>
                     </ul>
+                </nav>
 
-                    <form id="myForm" class="border rounded-3 p-4 bg-white shadow-sm">
-                        <h4 class="mb-4">Example Form</h4>
+                <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4">
+                    <header class="pt-3 mb-5 text-center">
+                        <h1>🐾 BeastValidator</h1>
+                        <p class="lead">A flexible, DOM-powered JavaScript form validation library with no dependencies.</p>
+                        <a href="https://github.com/hollodk/beast-validator" target="_blank" class="btn btn-primary me-2">⭐ Star on GitHub</a>
+                        <a href="#demo" class="btn btn-outline-secondary">Try Demo</a>
+                    </header>
 
-                        <div class="mb-3">
-                            <label class="form-label">Name:</label>
-                            <input type="text" name="name" class="form-control" data-sleep="2" required>
+                    <section id="demo" class="mb-5">
+                        <h2>🚀 Basic Validation</h2>
+                        <form id="basicForm">
+                            <div class="mb-3">
+                                <label class="form-label">Name *</label>
+                                <input type="text" class="form-control" name="name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email *</label>
+                                <input type="email" class="form-control" name="email" required>
+                            </div>
+                            <button type="submit" class="btn btn-success">Submit</button>
+                        </form>
+                    </section>
+
+                    <section id="steps" class="mb-5">
+                        <h2>🧭 Step Form</h2>
+                        <form id="stepForm">
+                            <div class="step-section" data-step="1">
+                                <div class="mb-3">
+                                    <label class="form-label">Username *</label>
+                                    <input type="text" class="form-control" name="username" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Password *</label>
+                                    <input type="password" class="form-control" name="password" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary next-step">Next</button>
+                            </div>
+                            <div class="step-section" data-step="2">
+                                <p><b>Very nice, your form has been submitted.</b></p>
+                            </div>
+                        </form>
+                    </section>
+
+                    <section id="advanced-demo" class="mb-5">
+                        <h2>🔍 Advanced Form</h2>
+                        <form id="advancedForm">
+                            <div class="mb-3">
+                                <label class="form-label">Username (async check)</label>
+                                <input type="text" class="form-control" name="username" required data-validator="checkUsername">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Password (min 6 chars/ max 12 chars)</label>
+                                <input type="password" class="form-control" name="password" required minlength="6" maxlength="12">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Confirm Password</label>
+                                <input type="password" class="form-control" name="confirm_password" required data-match="password">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Custom error</label>
+                                <input type="password" class="form-control" name="custom_error" required data-error-message="Please try harder">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Favorite Color</label>
+                                <select name="color" class="form-select" required>
+                                    <option value="">-- Please choose --</option>
+                                    <option value="red">Red</option>
+                                    <option value="blue">Blue</option>
+                                    <option value="green">Green</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label d-block">Preferred Contact Method *</label>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" name="contact" value="email" required data-error-container="beast-contact-box">
+                                    <label class="form-check-label">Email</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" name="contact" value="phone" required data-error-container="beast-contact-box">
+                                    <label class="form-check-label">Phone</label>
+                                </div>
+                                <div id="beast-contact-box" class="beast-error-msg"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label d-block">Choose at least 2 options *</label>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" name="options[]" value="a" data-min="2" data-error-container="beast-choice-box">
+                                    <label class="form-check-label">Option A</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" name="options[]" value="b" data-min="2" data-error-container="beast-choice-box">
+                                    <label class="form-check-label">Option B</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" name="options[]" value="c" data-min="2" data-error-container="beast-choice-box">
+                                    <label class="form-check-label">Option C</label>
+                                </div>
+                                <div id="beast-choice-box" class="beast-error-msg"></div>
+                            </div>
+
+                            <div class="form-check mb-3">
+                                <input type="checkbox" class="form-check-input" name="agree" required data-error-container="beast-agree-box">
+                                <label class="form-check-label">I agree to terms</label>
+                                <div id="beast-agree-box" class="beast-error-msg"></div>
+                            </div>
+
+                            <button type="submit" class="btn btn-success">Submit</button>
+                            <button type="button" class="btn btn-outline-warning ms-2" onclick="resetAdvancedForm()">Reset Validation</button>
+                        </form>
+                    </section>
+
+                    <section id="install" class="mb-5">
+                        <h2>📦 Installation</h2>
+                        <ul>
+                            <li><strong>NPM:</strong> <code>npm install beastvalidator</code></li>
+                            <li><strong>Composer:</strong> <code>composer require hollodk/beastvalidator</code></li>
+                            <li><strong>CDN:</strong> <code>&lt;script src="https://cdn.jsdelivr.net/npm/beastvalidator@latest/dist/beastvalidator.min.js"&gt;&lt;/script&gt;</code></li>
+                        </ul>
+                    </section>
+                    <section id="features" class="mb-5">
+                        <h2>✨ Features</h2>
+                        <ul>
+                            <li>✅ Inline error messages</li>
+                            <li>🧭 Multi-step forms</li>
+                            <li>🧠 Custom validators</li>
+                            <li>🔁 Async validation</li>
+                            <li>💬 Tooltips and helper texts</li>
+                            <li>🎯 Focus on first error</li>
+                            <li>📦 Vanilla JS – no dependencies</li>
+                        </ul>
+                    </section>
+
+                    <section id="code" class="mb-5">
+                        <h2>💡 Example Usage</h2>
+                        <div class="code-block mb-3">
+                            <pre><code>&lt;form id="basicForm"&gt;
+  &lt;input type="text" name="name" required&gt;
+  &lt;input type="email" name="email" required&gt;
+&lt;/form&gt;
+                            </code></pre>
                         </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Email:</label>
-                            <input type="email" name="email" class="form-control" required>
+                        <div class="code-block">
+                            <pre><code>const validator = new BeastValidator(document.getElementById('basicForm'), {
+  tooltips: true,
+  onSuccess: () => alert("Form is valid!"),
+});</code></pre>
                         </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Country (2 CHARS):</label>
-                            <input type="text" name="country" class="form-control" required data-pattern="^[A-Za-z]{2}$">
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Message:</label>
-                            <textarea name="message" class="form-control" rows="3" required></textarea>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary w-100">Submit</button>
-                    </form>
-
-                </div>
+                    </section>
+                </main>
             </div>
         </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/beastvalidator@latest/dist/beastvalidator.min.js"></script>
+        <script>
+            const basicForm = new BeastValidator(document.getElementById('basicForm'), {
+                debug: true,
+                autoSubmit: false,
+                onSuccess: () => alert("✅ Basic form submitted!"),
+            });
+
+            const stepForm = new BeastValidator(document.getElementById('stepForm'), {
+                debug: true,
+                initSteps: true,
+                autoSubmit: false,
+                tooltips: true,
+                helperText: false,
+                onSuccess: () => stepForm.nextStep(),
+            });
+
+            const advancedForm = new BeastValidator(document.getElementById('advancedForm'), {
+                debug: true,
+                autoSubmit: false,
+                onSuccess: () => alert("✅ Advanced form submitted!"),
+            });
+
+            advancedForm.addValidator("checkUsername", async (field) => {
+                await new Promise(res => setTimeout(res, 500));
+                if (['admin', 'test'].includes(field.value.toLowerCase())) {
+                    return "Username is already taken";
+                }
+                return true;
+            });
+
+            function resetAdvancedForm() {
+                advancedForm.reset();
+            }
+        </script>
     </body>
 </html>
-

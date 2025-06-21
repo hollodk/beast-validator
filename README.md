@@ -2,7 +2,7 @@
 
 > A flexible, no-dependency JavaScript form validator built for modern forms with great UX.
 >
-> 🔗 **[Live Demo](https://hollodk.github.io/beast-validator/)**  
+> 🔗 **[Live Demo](https://hollodk.github.io/beast-validator/)**
 > 📁 **[GitHub Repository](https://github.com/hollodk/beast-validator)**
 
 ---
@@ -236,7 +236,7 @@ validator.prevStep();
 - [x] Step-by-step wizard
 - [x] CDN / NPM / Composer support
 - [ ] Visual success indicators
-- [ ] `reset()` method
+- [x] `reset()` method
 - [ ] TypeScript types
 - [ ] Localization & i18n
 - [ ] Error summary container
@@ -247,9 +247,9 @@ validator.prevStep();
 
 We love contributions!
 
-1. Fork the repo  
-2. Create a new branch  
-3. Write clean vanilla JS  
+1. Fork the repo
+2. Create a new branch
+3. Write clean vanilla JS
 4. Submit a PR 🚀
 
 ```bash
@@ -260,7 +260,7 @@ git clone https://github.com/hollodk/beast-validator.git
 
 ## 🌍 Browser Support
 
-- ✅ Chrome, Firefox, Safari, Edge, Opera  
+- ✅ Chrome, Firefox, Safari, Edge, Opera
 - ❌ Internet Explorer not supported
 
 ---
@@ -273,6 +273,6 @@ MIT — Free for personal & commercial use
 
 ## 👨‍💻 Author
 
-Made with 💛 by [@hollodk](https://github.com/hollodk)  
-🔗 [Demo](https://hollodk.github.io/beast-validator/)  
+Made with 💛 by [@hollodk](https://github.com/hollodk)
+🔗 [Demo](https://hollodk.github.io/beast-validator/)
 📁 [Repository](https://github.com/hollodk/beast-validator)
