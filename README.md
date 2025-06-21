@@ -1,37 +1,33 @@
 # 🐾 BeastValidator
 
-> A flexible, lightweight JavaScript form validator with no dependencies.
+> A flexible, no-dependency JavaScript form validator built for modern forms with great UX.
 >
-> 🔗 **[Live Demo](https://hollodk.github.io/beast-validator/)**
+> 🔗 **[Live Demo](https://hollodk.github.io/beast-validator/)**  
 > 📁 **[GitHub Repository](https://github.com/hollodk/beast-validator)**
-
-BeastValidator helps validate HTML forms with native semantics (`required`, `type="email"`, `pattern`, etc.), while enhancing UX through tooltips, helper messages, shake animations, and scroll-to-error functionality.
 
 ---
 
 ## ✨ Features
 
-- ✅ Validates required inputs, selects, checkboxes, and radios
-- 📬 Built-in email format checker
-- 🎯 Custom pattern matching via `data-pattern`
-- 🧠 Tooltips and inline error messages
-- 🔄 Realtime validation on input/change
-- 💥 Shake animation on error
-- ⬇️ Scrolls and focuses the first invalid field
-- 🧩 `onFail` callback returns all failed fields
-- 🧩 `onSuccess` callback when for is valid
-- 🧩 `onInit` callback when BeastValidator is initialized
-- 💡 Zero dependencies — pure JS!
-- Optional built-in wait for DOM event handler
-- Use form id or form object in constructor
-- Shortcut to hide and show elements
-- Minimalistic step wizard for showing different sections
+- ✅ Validates required inputs, selects, checkboxes, radios
+- 📧 Built-in email format validation
+- 🔤 Pattern matching via `data-pattern`
+- 🧠 Inline errors & tooltips
+- 🔁 Real-time validation (`input`/`change`)
+- 🫨 Shake animation for invalid fields
+- ⬇️ Scrolls to and focuses first invalid field
+- 🧩 `onFail`, `onSuccess`, `onInit` callbacks
+- ⏳ Delayed validation with `data-sleep`
+- 🧪 Async field validation (simulated)
+- 🪄 Step wizard support (`initSteps`, `nextStep`, `prevStep`)
+- ⚙️ Auto submit (`autoSubmit`)
+- 📦 Zero dependencies
 
 ---
 
 ## 🚀 Installation
 
-### Option 1: CDN (Fastest)
+### ✅ CDN
 
 ```html
 <script src="https://hollodk.github.io/beast-validator/beast-validator.js"></script>
@@ -40,7 +36,7 @@ BeastValidator helps validate HTML forms with native semantics (`required`, `typ
 
 ---
 
-### Option 2: NPM (For modern JavaScript projects)
+### 📦 NPM
 
 ```bash
 npm install beastvalidator
@@ -50,27 +46,25 @@ npm install beastvalidator
 import BeastValidator from 'beastvalidator';
 ```
 
-> 🔗 NPM package: [https://www.npmjs.com/package/beastvalidator](https://www.npmjs.com/package/beastvalidator)
+🔗 [NPM Package](https://www.npmjs.com/package/beastvalidator)
 
 ---
 
-### Option 3: Composer / Packagist (For PHP-based projects)
+### 🐘 Composer (for PHP-based projects)
 
 ```bash
 composer require hollodk/beastvalidator
 ```
 
-> 🔗 Packagist package: [https://packagist.org/packages/hollodk/beastvalidator](https://packagist.org/packages/hollodk/beastvalidator)
+🔗 [Packagist Package](https://packagist.org/packages/hollodk/beastvalidator)
 
 ---
 
-### Option 4: Manual Download
+### 🧾 Manual Download
 
 ```bash
 git clone https://github.com/hollodk/beast-validator.git
 ```
-
-Include the files manually:
 
 ```html
 <script src="/your-path/beast-validator.js"></script>
@@ -79,111 +73,114 @@ Include the files manually:
 
 ---
 
-## 🧪 Usage Example
+## 🧪 Example Usage
 
-### Sample Form Markup
+### ✅ Sample Form
 
 ```html
 <form id="myForm">
   <label>Email</label>
   <input type="email" name="email" required>
 
-  <label>Choose a value</label>
-  <select name="choice" required>
-    <option value="">-- Select --</option>
-    <option value="1">One</option>
-    <option value="2">Two</option>
-  </select>
+  <label>Country Code</label>
+  <input type="text" name="country" data-pattern="^[A-Z]{2}$" required>
 
   <label>
     <input type="checkbox" name="terms" required>
-    I agree to the terms
+    Accept Terms
   </label>
 
   <button type="submit">Submit</button>
 </form>
 ```
 
-### Initialization
+---
+
+### 🚀 Initialize Validator
 
 ```js
 new BeastValidator('myForm', {
   tooltips: true,
   shakeInput: true,
   focusFirst: true,
-  onFail: (fields) => {
-    console.warn('Validation failed for:', fields);
-  },
+  autoSubmit: false,
+  debug: true,
+  initSteps: false,
+  onInit: () => console.log('BeastValidator initialized'),
+  onFail: (fields) => console.warn('Validation failed:', fields),
+  onSuccess: () => alert('Form is valid!')
 });
 ```
+
 ---
 
 ## ⚙️ Options
 
-```js
-{
-  errorContainerClass: 'beast-error-msg',  // Class used for inline error display
-  tooltipClass: 'beast-tooltip',           // Class used for floating tooltips
-  focusFirst: true,                        // Automatically scroll to first error
-  validateOnChange: true,                  // Trigger validation on input/change
-  tooltips: true,                          // Enable tooltip messages
-  helperText: true,                        // Show error message below field
-  shakeInput: true,                        // Apply shake animation on error
-  waitForDom: true,                        // Let BeastValidator handle DOM ready event
-  debug: false,                            // Enable debugging to see whats really going on
-  setNoValidate: true,                     // Set novalidate for form
-  onFail: (fields) => {}                   // Callback with array of invalid fields
-  onSuccess: () => {}                      // Callback when form is successful
-  onInit: () => {}                         // Callback when BeastValidator is initialized
-}
+| Option              | Type     | Default           | Description                                      |
+|---------------------|----------|-------------------|--------------------------------------------------|
+| `errorContainerClass` | string | `'beast-error-msg'` | Class name for inline errors                     |
+| `tooltipClass`        | string | `'beast-tooltip'`   | Class name for tooltips                          |
+| `focusFirst`          | bool   | `true`              | Scroll to first invalid field                    |
+| `validateOnChange`    | bool   | `true`              | Validate on input/change                         |
+| `tooltips`            | bool   | `false`             | Show tooltips on error                           |
+| `helperText`          | bool   | `true`              | Show error message below field                   |
+| `shakeInput`          | bool   | `true`              | Shake animation on invalid fields                |
+| `waitForDom`          | bool   | `true`              | Wait for DOM ready                               |
+| `setNoValidate`       | bool   | `true`              | Disable native browser validation                |
+| `autoSubmit`          | bool   | `true`              | Submit automatically if form is valid            |
+| `initSteps`           | bool   | `false`             | Activate step wizard                             |
+| `debug`               | bool   | `false`             | Console debug logs                               |
+| `onInit`              | func   | `null`              | Called when validator initializes                |
+| `onFail`              | func   | `null`              | Called with array of invalid fields              |
+| `onSuccess`           | func   | `null`              | Called on successful validation                  |
+
+---
+
+## 🧷 Supported `data-*` Attributes
+
+| Attribute              | Example                               | Description                                      |
+|------------------------|----------------------------------------|--------------------------------------------------|
+| `data-pattern`         | `^[A-Z]{2}$`                          | Custom RegEx pattern                             |
+| `data-min`             | `2`                                   | Minimum checkboxes selected                      |
+| `data-sleep`           | `1.5`                                 | Delay before validation (in seconds)             |
+| `data-error-message`   | `Your name is required`               | Custom error message                             |
+| `data-error-container` | `myErrorBox`                          | Custom container for inline message              |
+| `data-async`           | `true`                                | Simulated async validation (e.g. uniqueness)     |
+
+---
+
+## 🧭 Step Wizard
+
+Enable multi-step flow with `initSteps: true`. Sections are shown via `data-step`.
+
+### HTML Example
+
+```html
+<section data-step="1">Step 1</section>
+<section data-step="2" style="display:none;">Step 2</section>
 ```
----
 
-## 🧷 Supported `data-` Attributes
+### JavaScript
 
-| Attribute              | Usage Example                                | Description                                      |
-|------------------------|----------------------------------------------|--------------------------------------------------|
-| `data-pattern`         | `data-pattern="^[A-Z]{2}$"`                  | Regex pattern for custom validation              |
-| `data-min`             | `data-min="2"`                               | Minimum checkboxes selected in a group           |
-| `data-sleep`           | `data-sleep="2"`                             | Sleep 2 seconds, to look important               |
-| `data-error-message    | `data-error.message="Your name is required"` | Custom error message for the field               |
-| `data-error-container` | `data-error-container="customId"`            | Custom element to display error message          |
-
-These attributes extend native validation without writing JS logic.
-
----
-
-## ✅ Validation Rules
-
-BeastValidator respects and extends:
-
-- `required`: Fields must not be empty
-- `type="email"`: Built-in email validation
-- `data-pattern`: Validates against custom RegEx
-- `data-min`: Applies to checkbox groups
-- `data-sleep`: Sleep to look important
-- `radio` buttons: Automatically grouped by `name` and validated
+```js
+validator.nextStep();
+validator.prevStep();
+```
 
 ---
 
 ## 🎨 Styling
 
-Customize or override styles easily with CSS.
-
 ### Tooltip
 
 ```css
 .beast-tooltip {
-  background-color: #f44336;
-  color: white;
-  padding: 6px 10px;
+  background: #f44336;
+  color: #fff;
+  padding: 5px 10px;
   border-radius: 4px;
-  font-size: 0.85em;
-  position: absolute;
-  white-space: nowrap;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  transform: translateY(-5px);
-  transition: opacity 0.2s ease-in-out;
+  font-size: 0.8em;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 ```
 
@@ -192,7 +189,8 @@ Customize or override styles easily with CSS.
 ```css
 .beast-error-msg {
   color: red;
-  text-decoration: underline;
+  font-size: 0.85em;
+  margin-top: 5px;
 }
 ```
 
@@ -205,85 +203,76 @@ Customize or override styles easily with CSS.
   75% { transform: translateX(5px); }
 }
 .shake {
-  animation: shake 0.5s ease-in-out;
+  animation: shake 0.3s ease-in-out;
 }
 ```
 
 ---
 
-## 🧩 Extendability
-
-Hook into failed validations with `onFail`, `onSuccess` and `onInit`:
+## 🔧 Manual API
 
 ```js
-new BeastValidator('myForm', {
-  onInit: () => {
-    alert(`BeastValidator is ready.`);
-  }
-  onFail: (invalidFields) => {
-    alert(`You must fix ${invalidFields.length} fields.`);
-  }
-  onSuccess: () => {
-    alert(`Your entry is successful.`);
-  }
+const validator = new BeastValidator('myForm');
 
-});
+// Validate the whole form
+validator.validate();
+
+// Validate a single field
+validator.validateField(document.querySelector('[name="email"]'));
+
+// Control step wizard
+validator.nextStep();
+validator.prevStep();
 ```
-
-You can also manually call `validateField(field)` or `validate()` if needed.
 
 ---
 
-## 🔭 Planned Features
+## 📌 Roadmap
 
-- [x] Scroll to first invalid field
-- [x] `data-error-container` for custom error placement
-- [x] `data-error-message` for per-field messages
+- [x] Scroll-to-first-invalid-field
+- [x] Custom error containers
+- [x] `data-error-message`
+- [x] Async field validation (simulated)
+- [x] Step-by-step wizard
+- [x] CDN / NPM / Composer support
 - [ ] Visual success indicators
-- [ ] Async/remote validation (e.g. unique email)
+- [ ] `reset()` method
 - [ ] TypeScript types
-- [x] NPM + Composer package
-- [ ] `reset()` method to clear validation state
-- [ ] Keep structured files for packagist, npm and github pages
+- [ ] Localization & i18n
+- [ ] Error summary container
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions!
+We love contributions!
+
+1. Fork the repo  
+2. Create a new branch  
+3. Write clean vanilla JS  
+4. Submit a PR 🚀
 
 ```bash
-# Clone and work locally
 git clone https://github.com/hollodk/beast-validator.git
 ```
 
-1. Fork this repo
-2. Create a feature branch
-3. Follow the simple architecture (vanilla JS)
-4. Submit a pull request
-
-Please keep dependencies at zero.
-
 ---
 
-## 🌐 Browser Support
+## 🌍 Browser Support
 
-BeastValidator supports all modern browsers:
-
-- ✅ Chrome, Edge, Firefox, Safari, Brave, Opera
-- ⚠️ IE not supported
+- ✅ Chrome, Firefox, Safari, Edge, Opera  
+- ❌ Internet Explorer not supported
 
 ---
 
 ## 📄 License
 
-MIT License — Free for personal and commercial use.
+MIT — Free for personal & commercial use
 
 ---
 
-## 🙌 Author
+## 👨‍💻 Author
 
-Made with 💛 by [@hollodk](https://github.com/hollodk)
-🔗 Demo: [https://hollodk.github.io/beast-validator/](https://hollodk.github.io/beast-validator/)
-📁 Repo: [https://github.com/hollodk/beast-validator](https://github.com/hollodk/beast-validator)
-
+Made with 💛 by [@hollodk](https://github.com/hollodk)  
+🔗 [Demo](https://hollodk.github.io/beast-validator/)  
+📁 [Repository](https://github.com/hollodk/beast-validator)
