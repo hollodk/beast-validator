@@ -100,7 +100,7 @@ git clone https://github.com/hollodk/beast-validator.git
 
 ```js
 new BeastValidator('myForm', {
-  tooltips: true,
+  tooltips: 'none',
   shakeInput: true,
   focusFirst: true,
   autoSubmit: false,
@@ -122,7 +122,7 @@ new BeastValidator('myForm', {
 | `tooltipClass`        | string | `'beast-tooltip'`   | Class name for tooltips                          |
 | `focusFirst`          | bool   | `true`              | Scroll to first invalid field                    |
 | `validateOnChange`    | bool   | `true`              | Validate on input/change                         |
-| `tooltips`            | bool   | `false`             | Show tooltips on error                           |
+| `tooltips`            | string | `none`              | Accept none, top-right, top-center, top-right    |
 | `helperText`          | bool   | `true`              | Show error message below field                   |
 | `shakeInput`          | bool   | `true`              | Shake animation on invalid fields                |
 | `waitForDom`          | bool   | `true`              | Wait for DOM ready                               |
@@ -145,7 +145,6 @@ new BeastValidator('myForm', {
 | `data-sleep`           | `1.5`                                 | Delay before validation (in seconds)             |
 | `data-error-message`   | `Your name is required`               | Custom error message                             |
 | `data-error-container` | `myErrorBox`                          | Custom container for inline message              |
-| `data-async`           | `true`                                | Simulated async validation (e.g. uniqueness)     |
 
 ---
 

@@ -192,10 +192,7 @@
                             </code></pre>
                         </div>
                         <div class="code-block">
-                            <pre><code>const validator = new BeastValidator(document.getElementById('basicForm'), {
-  tooltips: true,
-  onSuccess: () => alert("Form is valid!"),
-});</code></pre>
+                            <pre><code>const validator = new BeastValidator('#basicForm');</code></pre>
                         </div>
                     </section>
                 </main>
@@ -205,17 +202,17 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/beastvalidator@latest/dist/beastvalidator.min.js"></script>
         <script>
-            const basicForm = new BeastValidator(document.getElementById('basicForm'), {
+            const basicForm = new BeastValidator('basicForm', {
                 debug: true,
                 autoSubmit: false,
                 onSuccess: () => alert("✅ Basic form submitted!"),
             });
 
-            const stepForm = new BeastValidator(document.getElementById('stepForm'), {
+            const stepForm = new BeastValidator('stepForm', {
                 debug: true,
                 initSteps: true,
                 autoSubmit: false,
-                tooltips: true,
+                tooltips: 'top-center',
                 helperText: false,
                 onSuccess: () => stepForm.nextStep(),
             });

@@ -4,7 +4,7 @@ class BeastValidator {
         tooltipClass = 'beast-tooltip',
         focusFirst = true,
         validateOnChange = true,
-        tooltips = false,
+        tooltips = 'none',
         helperText = true,
         shakeInput = true,
         waitForDom = true,
@@ -146,7 +146,9 @@ class BeastValidator {
     }
 
     createTooltip(field, target, message) {
-        if (!this.tooltips) return;
+        if (this.tooltips == 'none') return;
+
+        const position = this.tooltips;
 
         const container = target.parentElement;
         if (getComputedStyle(container).position === 'static') {
@@ -159,12 +161,29 @@ class BeastValidator {
         tooltip.dataset.referenceId = field.dataset.beastId;
 
         tooltip.style.position = 'absolute';
-        tooltip.style.left = '0';
-        tooltip.style.top = '-30px';
         tooltip.style.zIndex = '9999';
         tooltip.style.pointerEvents = 'none';
+        tooltip.style.visibility = 'hidden';
 
         container.appendChild(tooltip);
+
+        const tooltipRect = tooltip.getBoundingClientRect();
+        const targetRect = target.getBoundingClientRect();
+
+        let left;
+        if (position === 'top-left') {
+            left = target.offsetLeft;
+        } else if (position === 'top-right') {
+            left = target.offsetLeft + target.offsetWidth - tooltipRect.width;
+        } else {
+            left = target.offsetLeft + (target.offsetWidth / 2) - (tooltipRect.width / 2);
+        }
+
+        const top = target.offsetTop - tooltipRect.height - 8;
+
+        tooltip.style.left = `${left}px`;
+        tooltip.style.top = `${top}px`;
+        tooltip.style.visibility = 'visible';
     }
 
     async validate() {
@@ -292,16 +311,6 @@ class BeastValidator {
             if (!emailPattern.test(field.value)) {
                 valid = false;
                 errorMessage = 'Please enter a valid email address';
-            }
-        }
-
-        if (field.dataset.async === 'true') {
-            this.log(`[ASYNC] Simulating async validation for field "${name}"`);
-            const isFakeValid = field.value !== 'taken';
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            if (!isFakeValid) {
-                errorMessage = 'Value is already taken';
-                valid = false;
             }
         }
 
