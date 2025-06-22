@@ -1,9 +1,14 @@
 # 🐾 BeastValidator
 
+![npm](https://img.shields.io/npm/v/beastvalidator)
+![license](https://img.shields.io/npm/l/beastvalidator)
+
 > A flexible, no-dependency JavaScript form validator built for modern forms with great UX.
 >
 > 🔗 **[Live Demo](https://hollodk.github.io/beast-validator/)**
 > 📁 **[GitHub Repository](https://github.com/hollodk/beast-validator)**
+
+BeastValidator is built for developers who want clean, dependency-free form validation with a great user experience. Unlike bulky frameworks or config-heavy libraries, BeastValidator works directly with native HTML5 attributes and gives you full control — perfect for landing pages, modals, or dynamic UIs.
 
 ---
 
@@ -19,12 +24,14 @@
 - 🫨 Shake animation for invalid fields
 - ⬇️ Scrolls to and focuses first invalid field
 - 🧩 `onFail`, `onSuccess`, `onInit` callbacks
-- 🧩 Turn form data into json object `onSuccess(json)`
+- 🧩 onSuccess(json) gives you a clean JSON object of all form values based on name=""
 - 💬 Tooltip support in multiple positions
 - 🌍 Multilingual error messages (EN, DA, DE, Pirate)
 - ⏳ Delayed validation with `data-sleep`
 - 🧪 Async field validation
 - 🧩 Step wizard support (`initSteps`, `data-step`, `nextStep`, `prevStep`)
+- ⌨️ Enter key triggers step validation and navigation automatically
+- 🔄 data-next buttons automatically show "Validating..." and become disabled during step validation or Enter key press
 - 🧠 Custom validators via `data-validator`
 - 🧩 Error summary with clickable links
 - 🔄 Reset method to clear all dirty states and visuals
@@ -33,6 +40,25 @@
 - 📦 Zero dependencies
 
 ---
+
+## 🚦 Quick Start (in 3 steps)
+
+1. **Add your form**
+```html
+<form id="myForm">
+  <input name="email" type="email" required>
+  <button>Submit</button>
+</form>
+```
+
+2. **Initialize BeastValidator**
+```js
+new BeastValidator('myForm', {
+  onSuccess: (json) => console.log(json)
+});
+```
+
+3. **Enjoy automatic validation!**
 
 ## 🚀 Installation
 
@@ -101,7 +127,15 @@ new BeastValidator('myForm', {
   debug: true,
   initSteps: false,
   onFail: (fields) => console.warn('Invalid fields:', fields),
-  onSuccess: () => alert('Form valid!')
+  onSuccess: (data) => {
+    fetch('https://api.example.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+      .then(res => res.json())
+      .then(console.log);
+  }
 });
 ```
 
@@ -234,14 +268,50 @@ validator.prevStep();
 // Reset form
 validator.reset();
 
-// Add custom validator
-validator.addValidator('checkUsername', async (field) => {
-  return field.value === 'admin' ? 'Username taken' : true;
-});
-
 // Extend language support
 setMessages(lang, messages)
 ```
+
+### ✨ Custom Field Validator Example
+```html
+<input name="username" data-validator="checkUsername">
+```
+
+```js
+validator.addValidator('checkUsername', async (field) => {
+  const value = field.value.trim();
+  if (value === 'admin') return 'Username taken';
+  return true;
+});
+```
+
+---
+
+## 🌐 Custom Language Messages
+
+```js
+validator.setMessages('fr', {
+  required: 'Ce champ est requis',
+  email: 'Adresse e-mail invalide'
+});
+validator.setLanguage('fr');
+```
+
+---
+
+## ❓ FAQ
+
+### How do I validate only part of the form?
+Use `validateField()` or `validateCurrentStep()`.
+
+### Can I skip auto-submission?
+Yes! Set `autoSubmit: false` and handle submission in `onSuccess()`.
+
+### Does it work in React/Vue?
+Yes, if you attach BeastValidator to a raw DOM node using `ref`.
+
+### Can I use it in modals or dynamic content?
+Yes. Make sure to call `new BeastValidator()` **after** the form appears in the DOM.
 
 ---
 
