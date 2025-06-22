@@ -130,15 +130,7 @@ new BeastValidator('myForm', {
   debug: true,
   initSteps: false,
   onFail: (fields) => console.warn('Invalid fields:', fields),
-  onSuccess: (data) => {
-    fetch('https://api.example.com/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    })
-      .then(res => res.json())
-      .then(console.log);
-  }
+  onSuccess: (data) => alert('Form successful'),
 });
 ```
 
