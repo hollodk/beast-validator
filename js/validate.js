@@ -106,6 +106,27 @@ class BeastValidator {
             });
         });
 
+        this.language = 'en';
+
+        this.messages = {
+            en: {
+                required: 'This field is required',
+                email: 'Please enter a valid email address',
+                minlength: (n) => `Minimum length is ${n} characters`,
+                maxlength: (n) => `Maximum length is ${n} characters`,
+                match: 'Values do not match',
+                invalidFormat: 'Invalid format'
+            },
+            da: {
+                required: 'Dette felt er påkrævet',
+                email: 'Indtast en gyldig e-mailadresse',
+                minlength: (n) => `Minimumslængde er ${n} tegn`,
+                maxlength: (n) => `Maksimallængde er ${n} tegn`,
+                match: 'Værdierne stemmer ikke overens',
+                invalidFormat: 'Ugyldigt format'
+            }
+        };
+
         if (this.initSteps === true) {
             this.currentStep = 1;
             this.showStep(this.currentStep);
@@ -146,6 +167,22 @@ class BeastValidator {
                 this.activateButton(submitBtn);
             }
         });
+    }
+
+    setLanguage(lang) {
+        if (this.messages[lang]) {
+            this.language = lang;
+            this.log(`[LANG] Language set to "${lang}"`);
+        } else {
+            this.log(`[WARN] Language "${lang}" not found`);
+        }
+    }
+
+    setMessages(lang, map) {
+        this.messages[lang] = {
+            ...this.messages[lang] || {},
+            ...map
+        };
     }
 
     activateButton(submitBtn) {
@@ -247,6 +284,8 @@ class BeastValidator {
 
     async validate() {
         this.log('[VALIDATION] Running validate()');
+        this.log(`[VALIDATION] Using language "${this.language}"`);
+
         const allFields = this.getAllFields();
         const seenRadioGroups = new Set();
         let isValid = true;
@@ -388,12 +427,15 @@ class BeastValidator {
             }
         }
 
+        field.classList.remove('validating', 'valid', 'invalid');
+
         if (!valid) {
             if (field.dataset.errorMessage) {
                 errorMessage = field.dataset.errorMessage;
             }
 
             this.log(`[VALIDATION] Field "${name}" failed: ${errorMessage}`);
+            field.classList.add('invalid');
 
             field.dataset.dirty = 'dirty';
             this.createTooltip(field, errorTarget, errorMessage);
@@ -413,8 +455,6 @@ class BeastValidator {
                     error.textContent = errorMessage;
                     errorTarget.insertAdjacentElement('afterend', error);
                 }
-            } else {
-                this.log(`[VALIDATION] Field "${name}" passed`);
             }
 
             if (this.shakeInput) {
@@ -425,9 +465,11 @@ class BeastValidator {
             }
         } else {
             delete field.dataset.dirty;
+
+            this.log(`[VALIDATION] Field "${name}" passed`);
+            field.classList.add('valid');
         }
 
-        field.classList.remove('validating');
         return valid;
     }
 

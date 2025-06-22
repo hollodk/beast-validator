@@ -255,7 +255,7 @@ validator.addValidator('checkUsername', async (field) => {
 - [x] Async field validation (simulated)
 - [x] Step-by-step wizard
 - [x] CDN / NPM / Composer support
-- [x] Visual success indicators (soon)
+- [x] Visual success indicators
 - [x] `reset()` method
 - [ ] TypeScript types
 - [ ] Localization & i18n
