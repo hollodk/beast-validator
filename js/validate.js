@@ -115,6 +115,9 @@ class BeastValidator {
                 maxValue: (n) => `Must be at most ${n}`,
                 minAge: (n) => `You must be at least ${n} years old`,
                 maxAge: (n) => `You must be no older than ${n} years old`,
+                passwordStrength_weak: 'Password must be at least 6 characters',
+                passwordStrength_medium: 'Password must be at least 8 characters and include a number',
+                passwordStrength_strong: 'Password must be at least 10 characters and include uppercase, lowercase, number, and symbol',
                 match: 'Values do not match',
                 invalidFormat: 'Invalid format'
             },
@@ -127,6 +130,9 @@ class BeastValidator {
                 maxValue: (n) => `Må højst være ${n}`,
                 minAge: (n) => `Du skal være mindst ${n} år gammel`,
                 maxAge: (n) => `Du må højst være ${n} år gammel`,
+                passwordStrength_weak: 'Adgangskoden skal være mindst 6 tegn lang',
+                passwordStrength_medium: 'Mindst 8 tegn og ét tal kræves',
+                passwordStrength_strong: 'Mindst 10 tegn med stort, småt, tal og symbol kræves',
                 match: 'Værdierne stemmer ikke overens',
                 invalidFormat: 'Ugyldigt format'
             },
@@ -139,6 +145,9 @@ class BeastValidator {
                 maxValue: (n) => `Höchstens ${n} erlaubt`,
                 minAge: (n) => `Du musst mindestens ${n} Jahre alt sein`,
                 maxAge: (n) => `Du darfst höchstens ${n} Jahre alt sein`,
+                passwordStrength_weak: 'Das Passwort muss mindestens 6 Zeichen lang sein',
+                passwordStrength_medium: 'Mindestens 8 Zeichen und eine Zahl erforderlich',
+                passwordStrength_strong: 'Mindestens 10 Zeichen, Groß-/Kleinbuchstaben, Zahl und Symbol erforderlich',
                 match: 'Die Werte stimmen nicht überein',
                 invalidFormat: 'Ungültiges Format'
             },
@@ -151,6 +160,9 @@ class BeastValidator {
                 maxValue: (n) => `No more than ${n}, or ye’ll walk the plank!`,
                 minAge: (n) => `Ye need to be at least ${n} summers old, ye wee swabbie`,
                 maxAge: (n) => `Over ${n}? That’s ancient, ye barnacle!`,
+                passwordStrength_weak: 'Yer secret be too short — at least 6 runes!',
+                passwordStrength_medium: 'Needs 8 runes and at least one shiny number, ye dog!',
+                passwordStrength_strong: 'A proper pirate pass be 10+ runes, big letters, small letters, cursed symbols, and digits!',
                 match: 'These don’t be matchin’, ye landlubber!',
                 invalidFormat: 'That be a cursed format, it is!'
             },
@@ -503,6 +515,15 @@ class BeastValidator {
             if (!ageCheck.valid) {
                 valid = false;
                 errorMessage = ageCheck.message;
+            }
+        }
+
+        // Password strength
+        if (valid && field.dataset.passwordStrength && field.value) {
+            const result = this.checkPasswordStrength(field);
+            if (!result.valid) {
+                valid = false;
+                errorMessage = result.message;
             }
         }
 
@@ -974,6 +995,33 @@ class BeastValidator {
         return { valid: true };
     }
 
+    checkPasswordStrength(field) {
+        const level = field.dataset.passwordStrength;
+        const value = field.value;
+        const messages = this.messages[this.language] || {};
+        let valid = true;
+
+        const rules = {
+            weak: /.{6,}/,
+            medium: /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/,
+            strong: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{10,}$/,
+        };
+
+        const rule = rules[level] || rules.medium;
+
+        valid = rule.test(value);
+
+        if (!valid) {
+            const msgKey = `passwordStrength_${level}`;
+            return {
+                valid: false,
+                message: messages[msgKey] || `Password is not ${level} enough`,
+            };
+        }
+
+        return { valid: true };
+    }
+
     async checkCustomValidator(field) {
         const validatorName = field.dataset.validator;
         const validatorFn = this.customValidators[validatorName];
@@ -986,5 +1034,4 @@ class BeastValidator {
             return true;
         }
     }
-
 }

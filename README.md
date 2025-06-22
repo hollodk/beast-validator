@@ -21,6 +21,7 @@ BeastValidator is built for developers who want clean, dependency-free form vali
 - 💡 Min/Max length validation via `minlength` and `maxlength`
 - 🎂 Age range validation via `data-min-age` and `data-max-age`
 - 🤝 Match another field with `data-match`
+- 🔐 Password strength enforcement via `data-password-strength="weak|medium|strong"`
 - 🔁 Real-time validation (`input`/`change`)
 - 🫨 Shake animation for invalid fields
 - ⬇️ Scrolls to and focuses first invalid field
@@ -230,17 +231,18 @@ new BeastValidator('myForm', {
 
 ## 📌 Supported `data-*` Attributes
 
-| Attribute              | Example              | Description                                  |
-|------------------------|----------------------|----------------------------------------------|
-| `data-min`             | `2`                  | Min checkboxes or min value                  |
-| `data-max`             | `6`                  | Max numeric value                            |
-| `data-min-age`         | `18`                 | Minimum age in years                         |
-| `data-max-age`         | `100`                | Maximum age in years                         |
-| `data-sleep`           | `1.5`                | Delay in seconds                             |
-| `data-match`           | `password`           | Match field name                             |
-| `data-validator`       | `checkUsername`      | Custom validator name                        |
-| `data-error-message`   | `Field required`     | Override default message                     |
-| `data-error-container` | `#myErrorBox`        | Place error message in custom container      |
+| Attribute                | Example              | Description                                  |
+|--------------------------|----------------------|----------------------------------------------|
+| `data-min`               | `2`                  | Min checkboxes or min value                  |
+| `data-max`               | `6`                  | Max numeric value                            |
+| `data-min-age`           | `18`                 | Minimum age in years                         |
+| `data-max-age`           | `100`                | Maximum age in years                         |
+| `data-password-strength` | `strong`             | Enforce password complexity (`weak`, `medium`, `strong`) |
+| `data-sleep`             | `1.5`                | Delay in seconds                             |
+| `data-match`             | `password`           | Match field name                             |
+| `data-validator`         | `checkUsername`      | Custom validator name                        |
+| `data-error-message`     | `Field required`     | Override default message                     |
+| `data-error-container`   | `#myErrorBox`        | Place error message in custom container      |
 
 ## 📌 Supported Attributes
 
@@ -368,6 +370,7 @@ new BeastValidator('myForm', { debug: true });
 - [x] Build files in dist
 - [x] Build minified version
 - [x] Age filter
+- [x] Password strength validator
 - [ ] TypeScript types
 - [ ] Accessibility improvements
 
