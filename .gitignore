@@ -1,1 +1,3 @@
-/deploy.sh
+deploy.sh
+node_modules/
+
