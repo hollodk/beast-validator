@@ -144,6 +144,70 @@ new BeastValidator('myForm', {
 
 ---
 
+## 🧭 Step Wizard
+
+Enable multi-step flow with `initSteps: true`. Sections are shown via `data-step`.
+
+Add `[data-next]` and `[data-prev]` buttons to control flow. Enable with `initSteps: true`.
+
+Wrap form sections with `data-step="1"`, `data-step="2"`, etc. Use:
+
+
+### HTML
+```html
+<section data-step="1">
+  <p>Step 1</p>
+  <input type="email" name="email" required>
+  <button type="button" data-next>Next</button>
+</section>
+<section data-step="2" data-validate="all">
+  <p>Step 2</p>
+  <input type="text" name="name" required>
+  <button type="button" data-prev>Back</button>
+  <button type="button" data-next>Submit</button>
+</section>
+<section data-step="3">
+  <p>Step 3 / Thank you</p>
+</section>
+```
+
+### JavaScript
+
+```js
+validator.nextStep();
+validator.prevStep();
+```
+
+---
+
+## 📡 API Submission (Optional)
+
+You can use `submitTo` to automatically post the validated form data to an API endpoint, without writing your own fetch logic.
+
+```js
+new BeastValidator('myForm', {
+  submitTo: {
+    url: 'https://api.example.com/form',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    onResponse(response) {
+      console.log('[onResponse]', response);
+      alert('🎉 Submission successful!');
+      // You can redirect or update the UI here
+    },
+    onError(error) {
+      console.warn('[onError]', error);
+      alert('❌ Something went wrong. Please try again.');
+      // You can re-enable a button or show server-side messages
+    },
+  },
+});
+```
+
+---
+
 ## ⚙️ Options
 
 | Option              | Type    | Default             | Description                                        |
@@ -193,42 +257,6 @@ new BeastValidator('myForm', {
 
 ---
 
-## 🧭 Step Wizard
-
-Enable multi-step flow with `initSteps: true`. Sections are shown via `data-step`.
-
-Add `[data-next]` and `[data-prev]` buttons to control flow. Enable with `initSteps: true`.
-
-Wrap form sections with `data-step="1"`, `data-step="2"`, etc. Use:
-
-
-### HTML
-```html
-<section data-step="1">
-  <p>Step 1</p>
-  <input type="email" name="email" required>
-  <button type="button" data-next>Next</button>
-</section>
-<section data-step="2" data-validate="all">
-  <p>Step 2</p>
-  <input type="text" name="name" required>
-  <button type="button" data-prev>Back</button>
-  <button type="button" data-next>Submit</button>
-</section>
-<section data-step="3">
-  <p>Step 3 / Thank you</p>
-</section>
-```
-
-### JavaScript
-
-```js
-validator.nextStep();
-validator.prevStep();
-```
-
----
-
 ## 🎨 Styling
 
 Add your own styles or override defaults:
@@ -250,34 +278,6 @@ Add your own styles or override defaults:
   75% { transform: translateX(4px); }
 }
 .shake { animation: shake 0.3s ease-in-out; }
-```
-
----
-
-## 📡 API Submission (Optional)
-
-You can use `submitTo` to automatically post the validated form data to an API endpoint, without writing your own fetch logic.
-
-```js
-new BeastValidator('myForm', {
-  submitTo: {
-    url: 'https://api.example.com/form',
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    onResponse(response) {
-      console.log('[onResponse]', response);
-      alert('🎉 Submission successful!');
-      // You can redirect or update the UI here
-    },
-    onError(error) {
-      console.warn('[onError]', error);
-      alert('❌ Something went wrong. Please try again.');
-      // You can re-enable a button or show server-side messages
-    },
-  },
-});
 ```
 
 ---
@@ -344,6 +344,19 @@ Yes, if you attach BeastValidator to a raw DOM node using `ref`.
 
 ### Can I use it in modals or dynamic content?
 Yes. Make sure to call `new BeastValidator()` **after** the form appears in the DOM.
+
+### Can I use BeastValidator without defining validation in JavaScript?
+Yes! One of BeastValidator’s core strengths is that it leverages native HTML5 attributes like required, pattern, minlength, maxlength, type=email, and custom data-* attributes for validation logic. You don’t need to define a separate JS config.
+
+### Can I delay validation (e.g., to simulate an async check)?
+Yes. Use the data-sleep="1" attribute to pause validation for X seconds before checking the value. Useful for async debouncing.
+
+### How can I debug what’s happening?
+Set debug: true to get verbose console logging of all key lifecycle events:
+
+```js
+new BeastValidator('myForm', { debug: true });
+```
 
 ---
 
