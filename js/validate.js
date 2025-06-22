@@ -162,9 +162,7 @@ class BeastValidator {
 
             const submitBtn = this.form.querySelector('button[type="submit"]');
             if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.dataset.originalText = submitBtn.innerHTML;
-                submitBtn.textContent = 'Validating...';
+                this.deactivateButton(submitBtn);
             }
 
             this.log('[VALIDATION] Starting form validation');
@@ -206,11 +204,16 @@ class BeastValidator {
 
                 this.log(`[STEP] Next button clicked. Full validation? ${forceFullValidation}`);
 
+                this.deactivateButton(btn);
+                await new Promise(resolve => setTimeout(resolve, 300)); // simulate loading animation
+
                 const valid = forceFullValidation
                     ? await this.validate()
                     : await this.validateCurrentStep();
 
                 if (valid) this.nextStep();
+
+                this.activateButton(btn);
             });
         });
 
@@ -218,6 +221,12 @@ class BeastValidator {
             if (e.key === 'Enter') {
                 const currentStepSection = this.form.querySelector(`[data-step="${this.currentStep}"]`);
                 if (!currentStepSection) return;
+
+                const btn = currentStepSection.querySelector('[data-next]');
+                if (btn) {
+                    this.deactivateButton(btn);
+                    await new Promise(resolve => setTimeout(resolve, 300)); // simulate loading animation
+                }
 
                 const isTextInput = ['INPUT'].includes(e.target.tagName);
                 const isSubmitType = e.target.type === 'submit';
@@ -230,14 +239,22 @@ class BeastValidator {
                         ? await this.validate()
                         : await this.validateCurrentStep();
 
+                    if (btn) {
+                        this.activateButton(btn);
+                    }
+
                     if (valid) this.nextStep();
                 }
             }
         });
 
         this.form.querySelectorAll('[data-prev]').forEach(btn => {
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', async (e) => {
+                this.deactivateButton(btn);
+                await new Promise(resolve => setTimeout(resolve, 300)); // simulate loading animation
+
                 this.prevStep();
+                this.activateButton(btn);
             });
         });
     }
@@ -655,10 +672,18 @@ class BeastValidator {
         return { top, left };
     }
 
-    activateButton(submitBtn) {
-        if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.textContent = submitBtn.dataset.originalText;
+    deactivateButton(btn) {
+        if (btn) {
+            btn.disabled = true;
+            btn.dataset.originalText = btn.innerHTML;
+            btn.textContent = 'Validating...';
+        }
+    }
+
+    activateButton(btn) {
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = btn.dataset.originalText;
         }
     }
 
