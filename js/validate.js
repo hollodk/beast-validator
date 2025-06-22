@@ -54,6 +54,7 @@ class BeastValidator {
         }
     }
 
+    // lifecycle methods
     initialize(form) {
         this.log('[INIT] Initializing validator');
 
@@ -167,6 +168,16 @@ class BeastValidator {
         }
     }
 
+    reset() {
+        this.log('[ACTION] Form reset called, clearing all dirty fields and errors');
+
+        this.clearErrors();
+
+        this.form.querySelectorAll('[data-dirty="dirty"]').forEach((field) => {
+            delete field.dataset.dirty;
+        });
+    }
+
     attachListener() {
         this.form.addEventListener('submit', async (e) => {
             this.log('[EVENT] Submit triggered');
@@ -197,123 +208,7 @@ class BeastValidator {
         });
     }
 
-    setLanguage(lang) {
-        if (this.messages[lang]) {
-            this.language = lang;
-            this.log(`[LANG] Language set to "${lang}"`);
-        } else {
-            this.log(`[WARN] Language "${lang}" not found`);
-        }
-    }
-
-    setMessages(lang, map) {
-        this.messages[lang] = {
-            ...this.messages[lang] || {},
-            ...map
-        };
-    }
-
-    activateButton(submitBtn) {
-        if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.textContent = submitBtn.dataset.originalText;
-        }
-    }
-
-    getAllFields() {
-        return this.form.querySelectorAll('input, textarea, select');
-    }
-
-    clearErrors() {
-        this.log('[VALIDATION] Clearing all error messages');
-        this.form.querySelectorAll(`.${this.errorContainerClass}`).forEach(el => {
-            el.id ? el.innerHTML = '' : el.remove();
-        });
-
-        document.querySelectorAll('.' + this.tooltipClass).forEach(el => el.remove());
-    }
-
-    createTooltip(field, target, message) {
-        if (this.tooltips == 'none') return;
-
-        const position = this.tooltips;
-
-        this.log(`[UI] Showing tooltip for "${field.name || '[unnamed]'}" at ${position}`);
-
-        const container = target.parentElement;
-        if (getComputedStyle(container).position === 'static') {
-            container.style.position = 'relative';
-        }
-
-        const tooltip = document.createElement('div');
-        tooltip.className = this.tooltipClass;
-        tooltip.textContent = message;
-        tooltip.dataset.referenceId = field.dataset.beastId;
-
-        tooltip.style.position = 'absolute';
-        tooltip.style.zIndex = '9999';
-        tooltip.style.pointerEvents = 'none';
-        tooltip.style.visibility = 'hidden';
-
-        container.appendChild(tooltip);
-
-        const tooltipRect = tooltip.getBoundingClientRect();
-        const targetRect = target.getBoundingClientRect();
-
-        let left;
-        if (position === 'top-left') {
-            left = target.offsetLeft;
-        } else if (position === 'top-right') {
-            left = target.offsetLeft + target.offsetWidth - tooltipRect.width;
-        } else {
-            left = target.offsetLeft + (target.offsetWidth / 2) - (tooltipRect.width / 2);
-        }
-
-        const top = target.offsetTop - tooltipRect.height - 8;
-
-        tooltip.style.left = `${left}px`;
-        tooltip.style.top = `${top}px`;
-        tooltip.style.visibility = 'visible';
-    }
-
-    validateCurrentStep() {
-        const currentStep = this.currentStep;
-
-        const fields = this.form.querySelectorAll(`[data-step="${currentStep}"] input, [data-step="${currentStep}"] select, [data-step="${currentStep}"] textarea`);
-
-        let isValid = true;
-        let firstInvalid = null;
-        const failedFields = [];
-
-        this.clearErrors();
-
-        const validations = Array.from(fields).map(async (field) => {
-            const valid = await this.validateField(field);
-            if (!valid) {
-                if (!firstInvalid) firstInvalid = field;
-                isValid = false;
-                failedFields.push(field);
-            }
-        });
-
-        return Promise.all(validations).then(() => {
-            if (!isValid && firstInvalid) {
-                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                firstInvalid.focus({ preventScroll: true });
-
-                if (typeof this.onFail === 'function') {
-                    this.onFail(failedFields);
-                }
-
-                if (this.errorSummaryTarget) {
-                    this.renderErrorSummary(failedFields);
-                }
-            }
-
-            return isValid;
-        });
-    }
-
+    // validate methods
     async validate() {
         this.log('[VALIDATION] Running validate()');
         this.log(`[VALIDATION] Using language "${this.language}"`);
@@ -524,27 +419,51 @@ class BeastValidator {
         return valid;
     }
 
-    clearThemeClasses(field) {
-        if (this.theme === 'none') return;
+    validateCurrentStep() {
+        const currentStep = this.currentStep;
 
-        const classes = {
-            beast: ['valid', 'invalid'],
-            bootstrap: ['is-valid', 'is-invalid'],
-        };
+        const fields = this.form.querySelectorAll(`[data-step="${currentStep}"] input, [data-step="${currentStep}"] select, [data-step="${currentStep}"] textarea`);
 
-        (classes[this.theme] || []).forEach(cls => field.classList.remove(cls));
+        let isValid = true;
+        let firstInvalid = null;
+        const failedFields = [];
+
+        this.clearErrors();
+
+        const validations = Array.from(fields).map(async (field) => {
+            const valid = await this.validateField(field);
+            if (!valid) {
+                if (!firstInvalid) firstInvalid = field;
+                isValid = false;
+                failedFields.push(field);
+            }
+        });
+
+        return Promise.all(validations).then(() => {
+            if (!isValid && firstInvalid) {
+                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstInvalid.focus({ preventScroll: true });
+
+                if (typeof this.onFail === 'function') {
+                    this.onFail(failedFields);
+                }
+
+                if (this.errorSummaryTarget) {
+                    this.renderErrorSummary(failedFields);
+                }
+            }
+
+            return isValid;
+        });
     }
 
-    applyThemeClass(field, type) {
-        if (this.theme === 'none') return;
+    clearErrors() {
+        this.log('[VALIDATION] Clearing all error messages');
+        this.form.querySelectorAll(`.${this.errorContainerClass}`).forEach(el => {
+            el.id ? el.innerHTML = '' : el.remove();
+        });
 
-        const map = {
-            beast: { valid: 'valid', invalid: 'invalid' },
-            bootstrap: { valid: 'is-valid', invalid: 'is-invalid' },
-        };
-
-        const cls = map[this.theme]?.[type];
-        if (cls) field.classList.add(cls);
+        document.querySelectorAll('.' + this.tooltipClass).forEach(el => el.remove());
     }
 
     clearErrorsFor(field) {
@@ -564,6 +483,14 @@ class BeastValidator {
         });
     }
 
+    // utility methods
+    log(msg, level = 'debug') {
+        if (!this.debug) return;
+        if (level === 'warn') console.warn(msg);
+        else if (level === 'error') console.error(msg);
+        else console.log(`[${new Date().toISOString()}] ${msg}`);
+    }
+
     randomString(length = 8) {
         const letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         return Array.from({ length }, () =>
@@ -571,73 +498,36 @@ class BeastValidator {
         ).join('');
     }
 
-    log(message, level = 'DEBUG') {
-        if (this.debug === true) {
-            const timestamp = new Date().toISOString().split('T')[1].split('.')[0];
-            console.log(`[${timestamp}] [${level}] ${message}`);
-        }
-    }
+    // UI helpers
+    createTooltip(field, target, message) {
+        if (this.tooltips == 'none') return;
 
-    showStep(stepNumber) {
-        const sections = document.querySelectorAll('[data-step]');
-        sections.forEach(section => {
-            const step = parseInt(section.dataset.step, 10);
-            section.style.display = step === stepNumber ? 'block' : 'none';
-        });
-        this.currentStep = stepNumber;
-        this.log(`[STEP] Showing step ${stepNumber}`);
+        const position = this.tooltips;
 
-        if (typeof this.onStepChange === 'function') {
-            this.onStepChange(stepNumber);
-        }
-    }
+        this.log(`[UI] Showing tooltip for "${field.name || '[unnamed]'}" at ${position}`);
 
-    nextStep() {
-        if (this.currentStep < document.querySelectorAll('[data-step]').length) {
-            this.showStep(this.currentStep + 1);
-        } else {
-            this.log('[STEP] Already at last step, cannot go forward');
-        }
-    }
-
-    prevStep() {
-        if (this.currentStep > 1) {
-            this.showStep(this.currentStep - 1);
-        } else {
-            this.log('[STEP] Already at first step, cannot go backward');
-        }
-    }
-
-    reset() {
-        this.log('[ACTION] Form reset called, clearing all dirty fields and errors');
-
-        this.clearErrors();
-
-        this.form.querySelectorAll('[data-dirty="dirty"]').forEach((field) => {
-            delete field.dataset.dirty;
-        });
-    }
-
-    addValidator(name, fn) {
-        this.log(`[CUSTOM] Adding custom validator "${name}"`);
-
-        this.customValidators[name] = fn;
-    }
-
-    setErrorSummaryTarget(selector, options = {}) {
-        const el = document.querySelector(selector);
-        if (!el) {
-            this.log(`[SUMMARY] Target "${selector}" not found`);
-            return;
+        const container = target.parentElement;
+        if (getComputedStyle(container).position === 'static') {
+            container.style.position = 'relative';
         }
 
-        this.errorSummaryTarget = el;
-        this.errorSummaryOptions = {
-            ...this.errorSummaryOptions,
-            ...options
-        };
+        const tooltip = document.createElement('div');
+        tooltip.className = this.tooltipClass;
+        tooltip.textContent = message;
+        tooltip.dataset.referenceId = field.dataset.beastId;
 
-        this.log(`[SUMMARY] Bound to ${selector}`);
+        tooltip.style.position = 'absolute';
+        tooltip.style.zIndex = '9999';
+        tooltip.style.pointerEvents = 'none';
+        tooltip.style.visibility = 'hidden';
+
+        container.appendChild(tooltip);
+
+        const { top, left } = this.getTooltipCoordinates(target, tooltip, position);
+
+        tooltip.style.left = `${left}px`;
+        tooltip.style.top = `${top}px`;
+        tooltip.style.visibility = 'visible';
     }
 
     renderErrorSummary(fields) {
@@ -695,5 +585,133 @@ class BeastValidator {
 
         wrapper.appendChild(list);
         container.appendChild(wrapper);
+    }
+
+    getTooltipCoordinates(target, tooltip, position = 'top-center') {
+        const tooltipRect = tooltip.getBoundingClientRect();
+        const targetRect = target.getBoundingClientRect();
+        const offsetLeft = target.offsetLeft;
+        const offsetTop = target.offsetTop;
+
+        let left, top;
+
+        switch (position) {
+            case 'top-left':
+                left = offsetLeft;
+                break;
+            case 'top-right':
+                left = offsetLeft + target.offsetWidth - tooltipRect.width;
+                break;
+            case 'top-center':
+            default:
+                left = offsetLeft + (target.offsetWidth / 2) - (tooltipRect.width / 2);
+                break;
+        }
+
+        top = offsetTop - tooltipRect.height - 8;
+
+        return { top, left };
+    }
+
+    activateButton(submitBtn) {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = submitBtn.dataset.originalText;
+        }
+    }
+
+    applyThemeClass(field, type) {
+        if (this.theme === 'none') return;
+
+        const map = {
+            beast: { valid: 'valid', invalid: 'invalid' },
+            bootstrap: { valid: 'is-valid', invalid: 'is-invalid' },
+        };
+
+        const cls = map[this.theme]?.[type];
+        if (cls) field.classList.add(cls);
+    }
+
+    setLanguage(lang) {
+        if (this.messages[lang]) {
+            this.language = lang;
+            this.log(`[LANG] Language set to "${lang}"`);
+        } else {
+            this.log(`[WARN] Language "${lang}" not found`);
+        }
+    }
+
+    setMessages(lang, map) {
+        this.messages[lang] = {
+            ...this.messages[lang] || {},
+            ...map
+        };
+    }
+
+    getAllFields() {
+        return this.form.querySelectorAll('input, textarea, select');
+    }
+
+    clearThemeClasses(field) {
+        if (this.theme === 'none') return;
+
+        const classes = {
+            beast: ['valid', 'invalid'],
+            bootstrap: ['is-valid', 'is-invalid'],
+        };
+
+        (classes[this.theme] || []).forEach(cls => field.classList.remove(cls));
+    }
+
+    showStep(stepNumber) {
+        const sections = document.querySelectorAll('[data-step]');
+        sections.forEach(section => {
+            const step = parseInt(section.dataset.step, 10);
+            section.style.display = step === stepNumber ? 'block' : 'none';
+        });
+        this.currentStep = stepNumber;
+        this.log(`[STEP] Showing step ${stepNumber}`);
+
+        if (typeof this.onStepChange === 'function') {
+            this.onStepChange(stepNumber);
+        }
+    }
+
+    nextStep() {
+        if (this.currentStep < document.querySelectorAll('[data-step]').length) {
+            this.showStep(this.currentStep + 1);
+        } else {
+            this.log('[STEP] Already at last step, cannot go forward');
+        }
+    }
+
+    prevStep() {
+        if (this.currentStep > 1) {
+            this.showStep(this.currentStep - 1);
+        } else {
+            this.log('[STEP] Already at first step, cannot go backward');
+        }
+    }
+
+    addValidator(name, fn) {
+        this.log(`[CUSTOM] Adding custom validator "${name}"`);
+
+        this.customValidators[name] = fn;
+    }
+
+    setErrorSummaryTarget(selector, options = {}) {
+        const el = document.querySelector(selector);
+        if (!el) {
+            this.log(`[SUMMARY] Target "${selector}" not found`);
+            return;
+        }
+
+        this.errorSummaryTarget = el;
+        this.errorSummaryOptions = {
+            ...this.errorSummaryOptions,
+            ...options
+        };
+
+        this.log(`[SUMMARY] Bound to ${selector}`);
     }
 }
