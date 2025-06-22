@@ -22,10 +22,8 @@
             }
         </style>
 
-        <!--
         <link href="./css/style.css" rel="stylesheet">
         <script src="./js/validate.js"></script>
-        -->
 
         <link href="//hollodk.github.io/beast-validator/css/style.css" rel="stylesheet">
         <script src="//hollodk.github.io/beast-validator/js/validate.js"></script>
@@ -149,6 +147,16 @@
                             <div class="mb-3">
                                 <label class="form-label" for="customError">Custom error message</label>
                                 <input type="text" class="form-control" name="custom_error" id="customError" required data-error-message="Please try harder">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label" for="sleep">Country code</label>
+                                <input type="text" class="form-control" name="country" id="country" pattern="[A-Za-z]{2}" required data-error-message="Must be exact 2 characters">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label" for="sleep">Sleep (async)</label>
+                                <input type="text" class="form-control" name="sleep" id="sleep" data-sleep="1" required>
                             </div>
 
                             <div class="mb-3">

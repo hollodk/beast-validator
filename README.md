@@ -11,7 +11,7 @@
 
 - ✅ Validates required inputs, selects, checkboxes, radios
 - 📧 Built-in email format validation
-- 🔤 Pattern matching via `data-pattern`
+- 🔤 Pattern matching via `pattern`
 - 📏 Min/max numeric range support via `data-min` / `data-max`
 - 💡 Min/Max length validation via `minlength` and `maxlength`
 - 🤝 Match another field with `data-match`
@@ -85,7 +85,7 @@ git clone https://github.com/hollodk/beast-validator.git
   <input type="email" name="email" required>
   <input type="password" name="password" minlength="6" maxlength="20" required>
   <input type="password" name="confirm" data-match="password" required>
-  <input type="text" name="code" data-pattern="^[A-Z]{2}$" required>
+  <input type="text" name="code" pattern="^[A-Z]{2}$" required>
   <input type="number" name="guests" data-min="1" data-max="5" required>
   <button type="submit">Submit</button>
 </form>
@@ -135,7 +135,6 @@ new BeastValidator('myForm', {
 
 | Attribute              | Example              | Description                                  |
 |------------------------|----------------------|----------------------------------------------|
-| `data-pattern`         | `^[A-Z]{2}$`         | Custom regex format                          |
 | `data-min`             | `2`                  | Min checkboxes or min value                  |
 | `data-max`             | `6`                  | Max numeric value                            |
 | `data-sleep`           | `1.5`                | Delay in seconds                             |
@@ -143,6 +142,15 @@ new BeastValidator('myForm', {
 | `data-validator`       | `checkUsername`      | Custom validator name                        |
 | `data-error-message`   | `Field required`     | Override default message                     |
 | `data-error-container` | `#myErrorBox`        | Place error message in custom container      |
+
+## 📌 Supported Attributes
+
+| Attribute              | Example              | Description                                  |
+|------------------------|----------------------|----------------------------------------------|
+| `pattern`              | `[A-Z]{2}`           | Custom regex format                          |
+| `minlength`            | `6`                  | Min charaters in form                        |
+| `maxlength`            | `2`                  | Max characters in form                       |
+
 
 ---
 

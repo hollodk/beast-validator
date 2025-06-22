@@ -280,7 +280,7 @@ class BeastValidator {
         field.classList.add('validating');
 
         const sleep = parseFloat(field.dataset.sleep || '0');
-        if (sleep > 0) {
+        if (sleep > 0 && field.value !== '') {
             this.log(`[ASYNC] Sleeping for ${sleep}s`);
             await new Promise(resolve => setTimeout(resolve, sleep * 1000));
         }
@@ -328,23 +328,6 @@ class BeastValidator {
             }
         }
 
-        // Pattern
-        if (valid && field.dataset.pattern && field.value) {
-            if (!this.checkPattern(field)) {
-                valid = false;
-                errorMessage = messages.invalidFormat || 'Invalid format';
-            }
-        }
-
-        // Range
-        if (valid && field.dataset.pattern && field.value) {
-            if (!this.checkPattern(field)) {
-                valid = false;
-                errorMessage = messages.invalidFormat || 'Invalid format';
-            }
-        }
-
-
         // Match
         if (valid && field.dataset.match && field.value) {
             if (!this.checkMatch(field)) {
@@ -368,6 +351,14 @@ class BeastValidator {
             if (!rangeCheck.valid) {
                 valid = false;
                 errorMessage = rangeCheck.message;
+            }
+        }
+
+        // Pattern
+        if (valid && field.hasAttribute('pattern') && field.value) {
+            if (!this.checkPattern(field)) {
+                valid = false;
+                errorMessage = messages.invalidFormat || 'Invalid format';
             }
         }
 
@@ -766,7 +757,8 @@ class BeastValidator {
     }
 
     checkPattern(field) {
-        const regex = new RegExp(field.dataset.pattern);
+        const pattern = field.pattern;
+        const regex = new RegExp(`^(?:${pattern})$`);
         return regex.test(field.value);
     }
 
