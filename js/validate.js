@@ -113,6 +113,8 @@ class BeastValidator {
                 maxlength: (n) => `Maximum length is ${n} characters`,
                 minValue: (n) => `Must be at least ${n}`,
                 maxValue: (n) => `Must be at most ${n}`,
+                minAge: (n) => `You must be at least ${n} years old`,
+                maxAge: (n) => `You must be no older than ${n} years old`,
                 match: 'Values do not match',
                 invalidFormat: 'Invalid format'
             },
@@ -123,6 +125,8 @@ class BeastValidator {
                 maxlength: (n) => `Maksimallængde er ${n} tegn`,
                 minValue: (n) => `Skal være mindst ${n}`,
                 maxValue: (n) => `Må højst være ${n}`,
+                minAge: (n) => `Du skal være mindst ${n} år gammel`,
+                maxAge: (n) => `Du må højst være ${n} år gammel`,
                 match: 'Værdierne stemmer ikke overens',
                 invalidFormat: 'Ugyldigt format'
             },
@@ -133,6 +137,8 @@ class BeastValidator {
                 maxlength: (n) => `Maximal ${n} Zeichen erlaubt`,
                 minValue: (n) => `Mindestens ${n} erforderlich`,
                 maxValue: (n) => `Höchstens ${n} erlaubt`,
+                minAge: (n) => `Du musst mindestens ${n} Jahre alt sein`,
+                maxAge: (n) => `Du darfst höchstens ${n} Jahre alt sein`,
                 match: 'Die Werte stimmen nicht überein',
                 invalidFormat: 'Ungültiges Format'
             },
@@ -143,6 +149,8 @@ class BeastValidator {
                 maxlength: (n) => `Whoa! No more than ${n} runes, ye scallywag!`,
                 minValue: (n) => `Ye need at least ${n} doubloons`,
                 maxValue: (n) => `No more than ${n}, or ye’ll walk the plank!`,
+                minAge: (n) => `Ye need to be at least ${n} summers old, ye wee swabbie`,
+                maxAge: (n) => `Over ${n}? That’s ancient, ye barnacle!`,
                 match: 'These don’t be matchin’, ye landlubber!',
                 invalidFormat: 'That be a cursed format, it is!'
             },
@@ -486,6 +494,15 @@ class BeastValidator {
             if (!this.checkEmail(field.value)) {
                 valid = false;
                 errorMessage = messages.email || 'Please enter a valid email address';
+            }
+        }
+
+        // Age check
+        if (valid && (field.dataset.minAge || field.dataset.maxAge) && field.value) {
+            const ageCheck = this.checkAge(field);
+            if (!ageCheck.valid) {
+                valid = false;
+                errorMessage = ageCheck.message;
             }
         }
 
@@ -919,6 +936,38 @@ class BeastValidator {
             return {
                 valid: false,
                 message: this.messages[this.language]?.maxValue?.(max) || `Must be at most ${min}`,
+            };
+        }
+
+        return { valid: true };
+    }
+
+    checkAge(field) {
+        const value = field.value;
+        if (!value) return { valid: true };
+
+        const birthDate = new Date(value);
+        const today = new Date();
+        const age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+
+        const exactAge = age - (m < 0 || (m === 0 && today.getDate() < birthDate.getDate()) ? 1 : 0);
+
+        const minAge = parseInt(field.dataset.minAge, 10);
+        const maxAge = parseInt(field.dataset.maxAge, 10);
+        const messages = this.messages[this.language] || {};
+
+        if (!isNaN(minAge) && exactAge < minAge) {
+            return {
+                valid: false,
+                message: messages.minAge?.(minAge) || `You must be at least ${minAge} years old`,
+            };
+        }
+
+        if (!isNaN(maxAge) && exactAge > maxAge) {
+            return {
+                valid: false,
+                message: messages.maxAge?.(maxAge) || `You must be no older than ${maxAge} years old`,
             };
         }
 

@@ -19,6 +19,7 @@ BeastValidator is built for developers who want clean, dependency-free form vali
 - 🔤 Pattern matching via `pattern`
 - 📏 Min/max numeric range support via `data-min` / `data-max`
 - 💡 Min/Max length validation via `minlength` and `maxlength`
+- 🎂 Age range validation via `data-min-age` and `data-max-age`
 - 🤝 Match another field with `data-match`
 - 🔁 Real-time validation (`input`/`change`)
 - 🫨 Shake animation for invalid fields
@@ -117,6 +118,7 @@ git clone https://github.com/hollodk/beast-validator.git
   <input type="password" name="confirm" data-match="password" required>
   <input type="text" name="code" pattern="^[A-Z]{2}$" required>
   <input type="number" name="guests" data-min="1" data-max="5" required>
+  <input type="date" name="birthdate" data-min-age="18" data-max-age="99" required>
   <button type="submit">Submit</button>
 </form>
 ```
@@ -232,6 +234,8 @@ new BeastValidator('myForm', {
 |------------------------|----------------------|----------------------------------------------|
 | `data-min`             | `2`                  | Min checkboxes or min value                  |
 | `data-max`             | `6`                  | Max numeric value                            |
+| `data-min-age`         | `18`                 | Minimum age in years                         |
+| `data-max-age`         | `100`                | Maximum age in years                         |
 | `data-sleep`           | `1.5`                | Delay in seconds                             |
 | `data-match`           | `password`           | Match field name                             |
 | `data-validator`       | `checkUsername`      | Custom validator name                        |
@@ -363,7 +367,7 @@ new BeastValidator('myForm', { debug: true });
 - [x] Error summary rendering
 - [x] Build files in dist
 - [x] Build minified version
-- [ ] Age filter
+- [x] Age filter
 - [ ] TypeScript types
 - [ ] Accessibility improvements
 
