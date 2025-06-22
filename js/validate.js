@@ -18,6 +18,7 @@ class BeastValidator {
         onStepChange = null,
         language = 'en',
         theme = 'beast',
+        submitTo = null,
         errorSummaryTarget = null,
     } = {}) {
         this.errorContainerClass = errorContainerClass;
@@ -38,6 +39,7 @@ class BeastValidator {
         this.onStepChange = onStepChange;
         this.language = language;
         this.theme = theme;
+        this.submitTo = submitTo;
         this.errorSummaryTarget = errorSummaryTarget;
 
         this.form = null;
@@ -59,6 +61,10 @@ class BeastValidator {
         this.log('[INIT] Initializing validator');
 
         this.form = typeof form === 'string' ? document.getElementById(form) : form;
+        if (!this.form) {
+            this.log('[INIT] No form found. Initialization aborted.', 'error');
+            return;
+        }
 
         if (this.setNoValidate) {
             this.form.setAttribute('novalidate', 'true');
@@ -144,7 +150,7 @@ class BeastValidator {
     }
 
     reset() {
-        this.log('[ACTION] Form reset called, clearing all dirty fields and errors');
+        this.log('[RESET] Clearing form state and errors');
 
         this.clearErrors();
 
@@ -309,26 +315,73 @@ class BeastValidator {
                 this.errorSummaryTarget.innerHTML = '';
             }
 
+            const formData = this.getFormDataAsObject();
             if (typeof this.onSuccess === 'function') {
-                const formData = {};
-                this.getAllFields().forEach(field => {
-                    if (field.name && !field.disabled) {
-                        if (field.type === 'radio') {
-                            if (field.checked) formData[field.name] = field.value;
-                        } else if (field.type === 'checkbox') {
-                            if (!formData[field.name]) formData[field.name] = [];
-                            if (field.checked) formData[field.name].push(field.value);
-                        } else {
-                            formData[field.name] = field.value;
-                        }
-                    }
-                });
-
                 this.onSuccess(formData);
+            }
+
+            if (this.submitTo?.url) {
+                this.submitForm(formData);
             }
         }
 
         return isValid;
+    }
+
+    submitForm(formData) {
+        const url = this.submitTo.url;
+        const method = this.submitTo.method || 'POST';
+        const headers = {
+            'Content-Type': 'application/json',
+            ...(this.submitTo.headers || {})
+        };
+
+        const body = JSON.stringify(
+            typeof this.submitTo.transform === 'function'
+            ? this.submitTo.transform(formData)
+            : formData
+        );
+
+        this.log(`[API] Submitting to ${url} with method ${method}`);
+
+        fetch(url, { method, headers, body })
+            .then(async (res) => {
+                const isJson = res.headers.get('content-type')?.includes('application/json');
+                const data = isJson ? await res.json() : await res.text();
+
+                this.log(`[API] Response status: ${res.status}`);
+                this.log(`[API] Response body: ${JSON.stringify(data)}`);
+
+                if (res.ok) {
+                    this.submitTo.onResponse?.(data, res);
+                } else {
+                    this.log(`[API] Submission failed: ${JSON.stringify(err)}`, 'error');
+
+                    throw { status: res.status, data };
+                }
+            })
+            .catch((err) => {
+                this.submitTo.onError?.(err);
+            });
+    }
+
+    getFormDataAsObject() {
+        const formData = {};
+
+        this.getAllFields().forEach(field => {
+            if (field.name && !field.disabled) {
+                if (field.type === 'radio') {
+                    if (field.checked) formData[field.name] = field.value;
+                } else if (field.type === 'checkbox') {
+                    if (!formData[field.name]) formData[field.name] = [];
+                    if (field.checked) formData[field.name].push(field.value);
+                } else {
+                    formData[field.name] = field.value;
+                }
+            }
+        });
+
+        return formData;
     }
 
     async validateField(field) {
@@ -583,6 +636,7 @@ class BeastValidator {
         container.appendChild(tooltip);
 
         const { top, left } = this.getTooltipCoordinates(target, tooltip, position);
+        this.log(`[UI] Tooltip coordinates: top=${top}, left=${left}`);
 
         tooltip.style.left = `${left}px`;
         tooltip.style.top = `${top}px`;
@@ -591,6 +645,8 @@ class BeastValidator {
 
     renderErrorSummary(fields) {
         if (!this.errorSummaryTarget) return;
+
+        this.log(`[SUMMARY] Rendering error summary for ${fields.length} fields`);
 
         this.errorSummaryOptions = {
             scrollTo: true,
@@ -756,7 +812,10 @@ class BeastValidator {
 
     nextStep() {
         if (this.currentStep < document.querySelectorAll('[data-step]').length) {
-            this.showStep(this.currentStep + 1);
+            const nextNumber = this.currentStep + 1;
+            this.log(`[STEP] Switching from step ${this.currentStep} to ${nextNumber}`);
+
+            this.showStep(nextNumber);
         } else {
             this.log('[STEP] Already at last step, cannot go forward');
         }
@@ -764,7 +823,10 @@ class BeastValidator {
 
     prevStep() {
         if (this.currentStep > 1) {
-            this.showStep(this.currentStep - 1);
+            const nextNumber = this.currentStep - 1;
+            this.log(`[STEP] Switching from step ${this.currentStep} to ${nextNumber}`);
+
+            this.showStep(nextNumber);
         } else {
             this.log('[STEP] Already at first step, cannot go backward');
         }
@@ -867,7 +929,9 @@ class BeastValidator {
         const validatorName = field.dataset.validator;
         const validatorFn = this.customValidators[validatorName];
         if (typeof validatorFn === 'function') {
-            return await validatorFn(field);
+            const result = await validatorFn(field);
+            this.log(`[CUSTOM] Validator "${validatorName}" returned: ${result}`);
+            return result;
         } else {
             this.log(`[WARN] Custom validator "${validatorName}" not found`);
             return true;

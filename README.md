@@ -23,6 +23,7 @@ BeastValidator is built for developers who want clean, dependency-free form vali
 - 🔁 Real-time validation (`input`/`change`)
 - 🫨 Shake animation for invalid fields
 - ⬇️ Scrolls to and focuses first invalid field
+- 📡 Optional API submission via `submitTo`
 - 🧩 `onFail`, `onSuccess`, `onInit` callbacks
 - 🧩 onSuccess(json) gives you a clean JSON object of all form values based on name=""
 - 💬 Tooltip support in multiple positions
@@ -165,6 +166,7 @@ new BeastValidator('myForm', {
 | `onInit`              | func   | `null`              | Callback after init                               |
 | `onFail`              | func   | `null`              | Callback with invalid fields                      |
 | `onSuccess`           | func   | `null`              | Callback on valid form                            |
+| `submitTo`            | object | `null`              | Automatically submit to an API endpoint { url, method, headers, debug } |
 
 ---
 
@@ -248,6 +250,34 @@ Add your own styles or override defaults:
   75% { transform: translateX(4px); }
 }
 .shake { animation: shake 0.3s ease-in-out; }
+```
+
+---
+
+## 📡 API Submission (Optional)
+
+You can use `submitTo` to automatically post the validated form data to an API endpoint, without writing your own fetch logic.
+
+```js
+new BeastValidator('myForm', {
+  submitTo: {
+    url: 'https://api.example.com/form',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    onResponse(response) {
+      console.log('[onResponse]', response);
+      alert('🎉 Submission successful!');
+      // You can redirect or update the UI here
+    },
+    onError(error) {
+      console.warn('[onError]', error);
+      alert('❌ Something went wrong. Please try again.');
+      // You can re-enable a button or show server-side messages
+    },
+  },
+});
 ```
 
 ---

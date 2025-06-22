@@ -22,10 +22,8 @@
             }
         </style>
 
-        <!--
         <link href="./css/style.css" rel="stylesheet">
         <script src="./js/validate.js"></script>
-        -->
 
         <link href="//hollodk.github.io/beast-validator/css/style.css" rel="stylesheet">
         <script src="//hollodk.github.io/beast-validator/js/validate.js"></script>
@@ -41,7 +39,9 @@
                         <li class="nav-item"><a class="nav-link" href="#steps">🧭 Step Form</a></li>
                         <li class="nav-item"><a class="nav-link" href="#advanced-demo">🔍 Advanced Form</a></li>
                         <li class="nav-item"><a class="nav-link" href="#custom-validator">🧠 Custom Validator</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#error-summary">📋 Error Summary</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#error-summary-demo">📋 Error Summary</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#submitto-demo">📡 API Submission</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#playground">🌍 Playground</a></li>
                         <li class="nav-item"><a class="nav-link" href="#install">📦 Installation</a></li>
                         <li class="nav-item"><a class="nav-link" href="#features">✨ Features</a></li>
                         <li class="nav-item"><a class="nav-link" href="#code">💡 Code Examples</a></li>
@@ -49,7 +49,6 @@
                         <li class="nav-item"><a class="nav-link" href="#credit">👨 Credits</a></li>
                     </ul>
                 </nav>
-
 
                 <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4">
                     <header class="pt-5 pb-4 text-center border-bottom mb-4">
@@ -72,7 +71,7 @@
                         </div>
 
                         <div class="mt-4 text-muted small">
-                            Version: <code>1.0.13</code> &middot; Last updated: <span id="lastUpdated">June 2025</span>
+                            Version: <code>1.1.1</code> &middot; Last updated: <span id="lastUpdated">June 2025</span>
                         </div>
                     </header>
 
@@ -254,6 +253,30 @@
                         </form>
 
                         <div id="summaryOutput" class="mt-4"></div>
+                    </section>
+
+                    <section id="submitto-demo" class="mb-5">
+                        <h2>📡 API Submission Demo</h2>
+                        <p class="text-muted">This form uses <code>submitTo</code> to send data directly to a remote API endpoint.</p>
+
+                        <form id="submitToForm">
+                            <div class="mb-3">
+                                <label class="form-label" for="apiName">Name *</label>
+                                <input type="text" class="form-control" name="name" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label" for="apiEmail">Email *</label>
+                                <input type="email" class="form-control" name="email" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label" for="apiMessage">Message</label>
+                                <textarea class="form-control" name="message" rows="4"></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Send to API</button>
+                        </form>
                     </section>
 
                     <section id="playground" class="mb-5">
@@ -552,6 +575,30 @@ new BeastValidator('#stepForm', {
                 errorSummaryTarget: '#summaryOutput',
                 focusFirst: true,
                 onSuccess: (json) => alert("✅ All fields passed!"),
+            });
+
+            const submitToForm = new BeastValidator('submitToForm', {
+                debug: true,
+                autoSubmit: false,
+                submitTo: {
+                    url: 'https://httpbin.org/post',
+                    method: 'POST',
+                    headers: {
+                        'X-Custom-Header': 'beast-mode'
+                    },
+                    transform: (data) => ({
+                        ...data,
+                        sentFrom: 'beast-demo-page'
+                    }),
+                    onResponse: (data, res) => {
+                        console.log('✅ Response:', data);
+                        alert('✅ Form submitted to API!');
+                    },
+                    onError: (err) => {
+                        console.error('❌ API Error:', err);
+                        alert('❌ Failed to send form.');
+                    }
+                }
             });
 
             const playgroundValidator = new BeastValidator('playgroundForm', {
