@@ -12,19 +12,23 @@
 - ✅ Validates required inputs, selects, checkboxes, radios
 - 📧 Built-in email format validation
 - 🔤 Pattern matching via `data-pattern`
-- 🧠 Inline errors & tooltips
+- 📏 Min/max numeric range support via `data-min` / `data-max`
+- 💡 Min/Max length validation via `minlength` and `maxlength`
+- 🤝 Match another field with `data-match`
 - 🔁 Real-time validation (`input`/`change`)
 - 🫨 Shake animation for invalid fields
 - ⬇️ Scrolls to and focuses first invalid field
 - 🧩 `onFail`, `onSuccess`, `onInit` callbacks
+- 💬 Tooltip support in multiple positions
+- 🌍 Multilingual error messages (EN, DA, DE, Pirate)
 - ⏳ Delayed validation with `data-sleep`
-- 🧪 Async field validation (simulated)
-- 🪄 Step wizard support (`initSteps`, `nextStep`, `prevStep`)
-- ⚙️ Auto submit (`autoSubmit`)
-- 💡 Min/Max length validation via `minlength` and `maxlength`
-- 🤝 Match another field with `data-match`
-- 🧩 Custom validators via `data-validator`
-- 🧹 `reset()` method to clear dirty state and errors
+- 🧪 Async field validation
+- 🧩 Step wizard support (`initSteps`, `data-step`, `nextStep`, `prevStep`)
+- 🧠 Custom validators via `data-validator`
+- 🧩 Error summary with clickable links
+- 🔄 Reset method to clear all dirty states and visuals
+- ⚙️ Auto-submit toggle
+- 🧱 Theme support: `beast`, `bootstrap`, `none`
 - 📦 Zero dependencies
 
 ---
@@ -38,8 +42,6 @@
 <link rel="stylesheet" href="https://hollodk.github.io/beast-validator/beast-validator.css">
 ```
 
----
-
 ### 📦 NPM
 
 ```bash
@@ -52,17 +54,14 @@ import BeastValidator from 'beastvalidator';
 
 🔗 [NPM Package](https://www.npmjs.com/package/beastvalidator)
 
----
 
-### 🐘 Composer (for PHP-based projects)
+### 🐘 Composer (PHP Projects)
 
 ```bash
 composer require hollodk/beastvalidator
 ```
 
 🔗 [Packagist Package](https://packagist.org/packages/hollodk/beastvalidator)
-
----
 
 ### 🧾 Manual Download
 
@@ -79,46 +78,29 @@ git clone https://github.com/hollodk/beast-validator.git
 
 ## 🧪 Example Usage
 
-### ✅ Sample Form
+### ✅ HTML Form
 
 ```html
 <form id="myForm">
-  <label>Email</label>
   <input type="email" name="email" required>
-
-  <label>Password</label>
-  <input type="password" name="password" required minlength="6" maxlength="20">
-
-  <label>Confirm Password</label>
-  <input type="password" name="confirm" required data-match="password">
-
-  <label>Country Code</label>
-  <input type="text" name="country" data-pattern="^[A-Z]{2}$" required>
-
-  <label>
-    <input type="checkbox" name="terms" required>
-    Accept Terms
-  </label>
-
+  <input type="password" name="password" minlength="6" maxlength="20" required>
+  <input type="password" name="confirm" data-match="password" required>
+  <input type="text" name="code" data-pattern="^[A-Z]{2}$" required>
+  <input type="number" name="guests" data-min="1" data-max="5" required>
   <button type="submit">Submit</button>
 </form>
 ```
 
----
-
-### 🚀 Initialize Validator
+### ✅ JavaScript Initialization
 
 ```js
 new BeastValidator('myForm', {
   tooltips: 'top-center',
-  shakeInput: true,
-  focusFirst: true,
   autoSubmit: false,
   debug: true,
   initSteps: false,
-  onInit: () => console.log('BeastValidator initialized'),
-  onFail: (fields) => console.warn('Validation failed:', fields),
-  onSuccess: () => alert('Form is valid!')
+  onFail: (fields) => console.warn('Invalid fields:', fields),
+  onSuccess: () => alert('Form valid!')
 });
 ```
 
@@ -126,37 +108,41 @@ new BeastValidator('myForm', {
 
 ## ⚙️ Options
 
-| Option                | Type   | Default               | Description                                      |
-|------------------------|--------|------------------------|--------------------------------------------------|
-| `errorContainerClass` | string | `'beast-error-msg'`    | Class name for inline errors                     |
-| `tooltipClass`        | string | `'beast-tooltip'`      | Class name for tooltips                          |
-| `focusFirst`          | bool   | `true`                 | Scroll to first invalid field                    |
-| `validateOnChange`    | bool   | `true`                 | Validate on input/change                         |
-| `tooltips`            | string | `'none'`               | Accept `none`, `top-left`, `top-center`, `top-right` |
-| `helperText`          | bool   | `true`                 | Show error message below field                   |
-| `shakeInput`          | bool   | `true`                 | Shake animation on invalid fields                |
-| `waitForDom`          | bool   | `true`                 | Wait for DOM ready                               |
-| `setNoValidate`       | bool   | `true`                 | Disable native browser validation                |
-| `autoSubmit`          | bool   | `true`                 | Submit automatically if form is valid            |
-| `initSteps`           | bool   | `false`                | Activate step wizard                             |
-| `debug`               | bool   | `false`                | Console debug logs                               |
-| `onInit`              | func   | `null`                 | Called when validator initializes                |
-| `onFail`              | func   | `null`                 | Called with array of invalid fields              |
-| `onSuccess`           | func   | `null`                 | Called on successful validation                  |
+| Option              | Type    | Default             | Description                                        |
+|---------------------|---------|----------------------|----------------------------------------------------|
+| `errorContainerClass` | string | `'beast-error-msg'` | Class name for inline errors                      |
+| `tooltipClass`        | string | `'beast-tooltip'`   | Class name for tooltips                           |
+| `focusFirst`          | bool   | `true`              | Scroll/focus first invalid field                  |
+| `validateOnChange`    | bool   | `true`              | Validate on `input` and `change` events           |
+| `tooltips`            | string | `'none'`            | Tooltip position (`top-left`, `top-right`, `top-center`) |
+| `helperText`          | bool   | `true`              | Show inline error below fields                    |
+| `shakeInput`          | bool   | `true`              | Shake animation for invalid fields                |
+| `waitForDom`          | bool   | `true`              | Delay init until DOM is ready                     |
+| `setNoValidate`       | bool   | `true`              | Disable native browser validation                 |
+| `autoSubmit`          | bool   | `true`              | Auto submit form if valid                         |
+| `initSteps`           | bool   | `false`             | Enable step/wizard mode                           |
+| `debug`               | bool   | `false`             | Enable console logging                            |
+| `language`            | string | `'en'`              | Language key from `messages`                      |
+| `theme`               | string | `'beast'`           | `beast`, `bootstrap`, or `none`                   |
+| `errorSummaryTarget`  | string | `null`              | CSS selector for error summary                    |
+| `onInit`              | func   | `null`              | Callback after init                               |
+| `onFail`              | func   | `null`              | Callback with invalid fields                      |
+| `onSuccess`           | func   | `null`              | Callback on valid form                            |
 
 ---
 
-## 🧷 Supported `data-*` Attributes
+## 📌 Supported `data-*` Attributes
 
-| Attribute              | Example              | Description                                      |
-|------------------------|----------------------|--------------------------------------------------|
-| `data-pattern`         | `^[A-Z]{2}$`         | Custom RegEx pattern                             |
-| `data-min`             | `2`                  | Minimum checkboxes selected                      |
-| `data-sleep`           | `1.5`                | Delay before validation (in seconds)             |
-| `data-match`           | `password`           | Match another field value                        |
-| `data-validator`       | `checkUsername`      | Custom validator callback                        |
-| `data-error-message`   | `Your name is required` | Custom error message                           |
-| `data-error-container` | `myErrorBox`         | Custom container for inline message              |
+| Attribute              | Example              | Description                                  |
+|------------------------|----------------------|----------------------------------------------|
+| `data-pattern`         | `^[A-Z]{2}$`         | Custom regex format                          |
+| `data-min`             | `2`                  | Min checkboxes or min value                  |
+| `data-max`             | `6`                  | Max numeric value                            |
+| `data-sleep`           | `1.5`                | Delay in seconds                             |
+| `data-match`           | `password`           | Match field name                             |
+| `data-validator`       | `checkUsername`      | Custom validator name                        |
+| `data-error-message`   | `Field required`     | Override default message                     |
+| `data-error-container` | `#myErrorBox`        | Place error message in custom container      |
 
 ---
 
@@ -164,11 +150,27 @@ new BeastValidator('myForm', {
 
 Enable multi-step flow with `initSteps: true`. Sections are shown via `data-step`.
 
-### HTML Example
+Add `[data-next]` and `[data-prev]` buttons to control flow. Enable with `initSteps: true`.
 
+Wrap form sections with `data-step="1"`, `data-step="2"`, etc. Use:
+
+
+### HTML
 ```html
-<section data-step="1">Step 1</section>
-<section data-step="2">Step 2</section>
+<section data-step="1">
+  <p>Step 1</p>
+  <input type="email" name="email" required>
+  <button type="button" data-next>Next</button>
+</section>
+<section data-step="2" data-validate="all">
+  <p>Step 2</p>
+  <input type="text" name="name" required>
+  <button type="button" data-prev>Back</button>
+  <button type="button" data-next>Submit</button>
+</section>
+<section data-step="3">
+  <p>Step 3 / Thank you</p>
+</section>
 ```
 
 ### JavaScript
@@ -182,7 +184,7 @@ validator.prevStep();
 
 ## 🎨 Styling
 
-### Tooltip
+Add your own styles or override defaults:
 
 ```css
 .beast-tooltip {
@@ -190,40 +192,25 @@ validator.prevStep();
   color: #fff;
   padding: 5px 10px;
   border-radius: 4px;
-  font-size: 0.8em;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
-```
-
-### Inline Error
-
-```css
 .beast-error-msg {
   color: red;
   font-size: 0.85em;
-  margin-top: 5px;
 }
-```
-
-### Shake Animation
-
-```css
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  75% { transform: translateX(5px); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
 }
-.shake {
-  animation: shake 0.3s ease-in-out;
-}
+.shake { animation: shake 0.3s ease-in-out; }
 ```
 
 ---
 
-## 🔧 Manual API
+## 📚 Public API
 
 ```js
-const validator = new BeastValidator('myForm');
+const validator = new BeastValidator('form');
 
 // Validate the whole form
 validator.validate();
@@ -240,26 +227,26 @@ validator.reset();
 
 // Add custom validator
 validator.addValidator('checkUsername', async (field) => {
-  if (field.value === 'admin') return 'Username taken';
-  return true;
+  return field.value === 'admin' ? 'Username taken' : true;
 });
+
+// Extend language support
+setMessages(lang, messages)
 ```
 
 ---
 
-## 📌 Roadmap
+## ✅ Roadmap
 
-- [x] Scroll-to-first-invalid-field
-- [x] Custom error containers
-- [x] `data-error-message`
-- [x] Async field validation (simulated)
+- [x] Custom tooltips
 - [x] Step-by-step wizard
-- [x] CDN / NPM / Composer support
-- [x] Visual success indicators
-- [x] `reset()` method
-- [x] Localization & i18n
+- [x] Pattern and length validation
+- [x] Custom error containers and messages
+- [x] Multilingual support
+- [x] Shake animation
+- [x] Error summary rendering
 - [ ] TypeScript types
-- [ ] Error summary container
+- [ ] Accessibility improvements
 
 ---
 

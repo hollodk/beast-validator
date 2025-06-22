@@ -35,90 +35,128 @@
                 <nav class="col-md-2 d-none d-md-block bg-light sidebar p-3">
                     <h4>📘 Menu</h4>
                     <ul class="nav flex-column">
-                        <li class="nav-item"><a class="nav-link" href="#demo">🚀 Basic Demo</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#demo">🚀 Basic Validation</a></li>
                         <li class="nav-item"><a class="nav-link" href="#steps">🧭 Step Form</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#advanced-demo">🔍Advanced Demo</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#install">📦 Install</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#advanced-demo">🔍 Advanced Form</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#custom-validator">🧠 Custom Validator</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#error-summary">📋 Error Summary</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#install">📦 Installation</a></li>
                         <li class="nav-item"><a class="nav-link" href="#features">✨ Features</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#code">💡 Code</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#code">💡 Code Examples</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#faq">❓ FAQ</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#credit">👨 Credits</a></li>
                     </ul>
                 </nav>
 
+
                 <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4">
-                    <header class="pt-3 mb-5 text-center">
-                        <h1>🐾 BeastValidator</h1>
-                        <p class="lead">A flexible, DOM-powered JavaScript form validation library with no dependencies.</p>
-                        <a href="https://github.com/hollodk/beast-validator" target="_blank" class="btn btn-primary me-2">⭐ Star on GitHub</a>
-                        <a href="#demo" class="btn btn-outline-secondary">Try Demo</a>
+                    <header class="pt-5 pb-4 text-center border-bottom mb-4">
+                        <h1 class="display-4 fw-bold">🐾 BeastValidator</h1>
+                        <p class="lead">A lightweight, powerful, and themeable JavaScript form validator with zero dependencies.</p>
+
+                        <div class="d-flex justify-content-center gap-3 flex-wrap">
+                            <a href="https://github.com/hollodk/beast-validator" target="_blank" class="btn btn-dark">
+                                ⭐ Star on GitHub
+                            </a>
+                            <a href="#demo" class="btn btn-outline-primary">
+                                🚀 Try Demo
+                            </a>
+                            <a href="#install" class="btn btn-outline-secondary">
+                                📦 Installation
+                            </a>
+                            <a href="#features" class="btn btn-outline-success">
+                                ✨ Features
+                            </a>
+                        </div>
+
+                        <div class="mt-4 text-muted small">
+                            Version: <code>1.x.x</code> &middot; Last updated: <span id="lastUpdated">June 2025</span>
+                        </div>
                     </header>
 
                     <section id="demo" class="mb-5">
                         <h2>🚀 Basic Validation</h2>
+                        <p class="text-muted">Start with a simple form using required fields and built-in validation.</p>
+
                         <form id="basicForm">
                             <div class="mb-3">
-                                <label class="form-label">Name *</label>
-                                <input type="text" class="form-control" name="name" required>
+                                <label class="form-label" for="basicName">Name *</label>
+                                <input type="text" class="form-control" name="name" id="basicName" required>
                             </div>
+
                             <div class="mb-3">
-                                <label class="form-label">Email *</label>
-                                <input type="email" class="form-control" name="email" required>
+                                <label class="form-label" for="basicEmail">Email *</label>
+                                <input type="email" class="form-control" name="email" id="basicEmail" required>
                             </div>
+
                             <button type="submit" class="btn btn-success">Submit</button>
                         </form>
-
-                        <div id="errorSummary"></div>
                     </section>
 
                     <section id="steps" class="mb-5">
-                        <h2>🧭 Step Form</h2>
+                        <h2>🧭 Multi-Step Form</h2>
+                        <p class="text-muted">Progress through a multi-step form with per-step validation.</p>
+
                         <form id="stepForm">
+                            <!-- Step 1 -->
                             <div class="step-section" data-step="1">
                                 <div class="mb-3">
-                                    <label class="form-label">Username *</label>
-                                    <input type="text" class="form-control" name="username" required>
+                                    <label class="form-label" for="stepUsername">Username *</label>
+                                    <input type="text" class="form-control" name="username" id="stepUsername" required>
                                 </div>
                                 <button type="button" class="btn btn-primary" data-next>Next</button>
                             </div>
+
+                            <!-- Step 2 -->
                             <div class="step-section" data-step="2" data-validate="all">
                                 <div class="mb-3">
-                                    <label class="form-label">Password *</label>
-                                    <input type="password" class="form-control" name="password" required>
+                                    <label class="form-label" for="stepPassword">Password *</label>
+                                    <input type="password" class="form-control" name="password" id="stepPassword" required minlength="6">
                                 </div>
                                 <button type="button" class="btn btn-secondary" data-prev>Prev</button>
                                 <button type="button" class="btn btn-primary" data-next>Submit</button>
                             </div>
+
+                            <!-- Step 3 -->
                             <div class="step-section" data-step="3">
-                                <p><b>Very nice, your form has been submitted.</b></p>
+                                <p class="alert alert-success"><b>✅ Very nice, your form has been submitted.</b></p>
                             </div>
                         </form>
                     </section>
 
                     <section id="advanced-demo" class="mb-5">
                         <h2>🔍 Advanced Form</h2>
+                        <p class="text-muted">This form shows advanced capabilities like async validators, match fields, custom messages, and group validation.</p>
+
                         <form id="advancedForm">
                             <div class="mb-3">
-                                <label class="form-label">Username (async check)</label>
-                                <input type="text" class="form-control" name="username" required data-validator="checkUsername">
+                                <label class="form-label" for="advUsername">Username (async check)</label>
+                                <input type="text" class="form-control" name="username" id="advUsername" required data-validator="checkUsername">
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">Password (min 6 chars/ max 12 chars)</label>
-                                <input type="password" class="form-control" name="password" required minlength="6" maxlength="12">
+                                <label class="form-label" for="advPassword">Password (6–12 chars)</label>
+                                <input type="password" class="form-control" name="password" id="advPassword" required minlength="6" maxlength="12">
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">Confirm Password</label>
-                                <input type="password" class="form-control" name="confirm_password" required data-match="password">
+                                <label class="form-label" for="advConfirm">Confirm Password</label>
+                                <input type="password" class="form-control" name="confirm_password" id="advConfirm" required data-match="password">
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">Custom error</label>
-                                <input type="password" class="form-control" name="custom_error" required data-error-message="Please try harder">
+                                <label class="form-label" for="customError">Custom error message</label>
+                                <input type="text" class="form-control" name="custom_error" id="customError" required data-error-message="Please try harder">
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">Favorite Color</label>
-                                <select name="color" class="form-select" required>
+                                <label class="form-label" for="advPrice">Price (10–1000)</label>
+                                <input type="text" class="form-control" name="price" id="advPrice" required data-min="10" data-max="1000">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label" for="advColor">Favorite Color</label>
+                                <select name="color" class="form-select" id="advColor" required>
                                     <option value="">-- Please choose --</option>
                                     <option value="red">Red</option>
                                     <option value="blue">Blue</option>
@@ -157,8 +195,8 @@
                             </div>
 
                             <div class="form-check mb-3">
-                                <input type="checkbox" class="form-check-input" name="agree" required data-error-container="beast-agree-box">
-                                <label class="form-check-label">I agree to terms</label>
+                                <input type="checkbox" class="form-check-input" name="agree" id="agreeBox" required data-error-container="beast-agree-box">
+                                <label class="form-check-label" for="agreeBox">I agree to terms</label>
                                 <div id="beast-agree-box" class="beast-error-msg"></div>
                             </div>
 
@@ -167,40 +205,279 @@
                         </form>
                     </section>
 
+                    <section id="custom-validator" class="mb-5">
+                        <h2>🧠 Custom Validator Demo</h2>
+                        <p class="text-muted">Register and test your own custom logic. This field checks if the input contains the word <code>beast</code>.</p>
+
+                        <form id="customValidatorForm">
+                            <div class="mb-3">
+                                <label class="form-label" for="beastInput">Must include "beast"</label>
+                                <input type="text" class="form-control" name="beastCheck" id="beastInput" required data-validator="containsBeast">
+                            </div>
+                            <button type="submit" class="btn btn-success">Submit</button>
+                        </form>
+                    </section>
+
+                    <section id="error-summary-demo" class="mb-5">
+                        <h2>📋 Error Summary Box</h2>
+                        <p class="text-muted">See all validation issues listed clearly in one place. Great for accessibility and quick debugging.</p>
+
+                        <form id="summaryForm">
+                            <div class="mb-3">
+                                <label class="form-label" for="fullName">Full Name *</label>
+                                <input type="text" class="form-control" name="fullname" id="fullName" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label" for="phone">Phone (10 digits)</label>
+                                <input type="text" class="form-control" name="phone" id="phone" required minlength="10" maxlength="10">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label" for="city">City *</label>
+                                <input type="text" class="form-control" name="city" id="city" required>
+                            </div>
+
+                            <button type="submit" class="btn btn-success">Submit</button>
+                        </form>
+
+                        <div id="summaryOutput" class="mt-4"></div>
+                    </section>
+
+                    <section id="playground" class="mb-5">
+                        <h2>🌍 Language & Theme Playground</h2>
+                        <p class="text-muted">Switch language and styling in real time to see how BeastValidator adapts.</p>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="languageSelect" class="form-label">🌐 Language</label>
+                                <select id="languageSelect" class="form-select">
+                                    <option value="en" selected>English</option>
+                                    <option value="da">Danish</option>
+                                    <option value="de">German</option>
+                                    <option value="pirate">Pirate 🏴‍☠️</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="themeSelect" class="form-label">🎨 Theme</label>
+                                <select id="themeSelect" class="form-select">
+                                    <option value="beast" selected>Beast (default)</option>
+                                    <option value="bootstrap">Bootstrap</option>
+                                    <option value="none">None</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <form id="playgroundForm">
+                            <div class="mb-3">
+                                <label class="form-label" for="playEmail">Email *</label>
+                                <input type="email" class="form-control" name="email" id="playEmail" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label" for="playPassword">Password *</label>
+                                <input type="password" class="form-control" name="password" id="playPassword" required minlength="6">
+                            </div>
+
+                            <button type="submit" class="btn btn-success">Submit</button>
+                        </form>
+                    </section>
+
                     <section id="install" class="mb-5">
-                        <h2>📦 Installation</h2>
+                        <h2>📦 Installation & Usage</h2>
+                        <p class="text-muted">BeastValidator is available via NPM, Composer, or CDN. Choose the method that fits your stack.</p>
+
+                        <h5 class="mt-4">🔧 NPM</h5>
+                        <pre class="code-block"><code>npm install beastvalidator</code></pre>
+
+                        <h5 class="mt-4">🐘 Composer</h5>
+                        <pre class="code-block"><code>composer require hollodk/beastvalidator</code></pre>
+
+                        <h5 class="mt-4">🌐 CDN</h5>
+                        <pre class="code-block"><code>&lt;script src="https://cdn.jsdelivr.net/npm/beastvalidator@latest/dist/beastvalidator.min.js"&gt;&lt;/script&gt;
+&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/beastvalidator@latest/dist/beastvalidator.min.css"&gt;</code></pre>
+
+                        <h5 class="mt-4">🧠 Basic Usage</h5>
+                        <pre class="code-block"><code>&lt;form id="myForm"&gt;
+  &lt;input type="text" name="email" required&gt;
+&lt;/form&gt;
+
+&lt;script&gt;
+  const validator = new BeastValidator('#myForm', {
+    debug: true,
+    autoSubmit: false,
+    onSuccess: () =&gt; alert("Form is valid!"),
+  });
+&lt;/script&gt;
+                        </code></pre>
+
+                        <h5 class="mt-4">📚 Resources</h5>
                         <ul>
-                            <li><strong>NPM:</strong> <code>npm install beastvalidator</code></li>
-                            <li><strong>Composer:</strong> <code>composer require hollodk/beastvalidator</code></li>
-                            <li><strong>CDN:</strong> <code>&lt;script src="https://cdn.jsdelivr.net/npm/beastvalidator@latest/dist/beastvalidator.min.js"&gt;&lt;/script&gt;</code></li>
+                            <li><a href="https://github.com/hollodk/beast-validator" target="_blank">GitHub Repository</a></li>
+                            <li><a href="https://hollodk.github.io/beast-validator/" target="_blank">Live Demo</a></li>
                         </ul>
                     </section>
+
                     <section id="features" class="mb-5">
                         <h2>✨ Features</h2>
-                        <ul>
-                            <li>✅ Inline error messages</li>
-                            <li>🧭 Multi-step forms</li>
-                            <li>🧠 Custom validators</li>
-                            <li>🔁 Async validation</li>
-                            <li>💬 Tooltips and helper texts</li>
-                            <li>🎯 Focus on first error</li>
-                            <li>📦 Vanilla JS – no dependencies</li>
+                        <p class="text-muted">BeastValidator is built to be flexible, lightweight, and modern. Here's what it can do:</p>
+
+                        <ul class="list-group">
+                            <li class="list-group-item">✅ Inline error messages or tooltips</li>
+                            <li class="list-group-item">🧭 Step-by-step form navigation with validation gates</li>
+                            <li class="list-group-item">🧠 Custom validator support (sync or async)</li>
+                            <li class="list-group-item">🌐 Multilingual support with dynamic language switching</li>
+                            <li class="list-group-item">🎨 Theme support (Beast, Bootstrap, custom)</li>
+                            <li class="list-group-item">📋 Error summary rendering with focus scroll</li>
+                            <li class="list-group-item">🌀 Visual effects like input shaking</li>
+                            <li class="list-group-item">💬 Helper texts below inputs</li>
+                            <li class="list-group-item">📊 Per-step validation with <code>data-step</code> logic</li>
+                            <li class="list-group-item">🛠️ Extendable with <code>addValidator()</code> and <code>registerTheme()</code></li>
+                            <li class="list-group-item">⚡ Zero dependencies and works in plain HTML or SPA setups</li>
                         </ul>
                     </section>
 
                     <section id="code" class="mb-5">
-                        <h2>💡 Example Usage</h2>
+                        <h2>💡 Code Examples</h2>
+                        <p class="text-muted">Quick examples to get started with different features of BeastValidator.</p>
+
+                        <h5 class="mt-4">✅ Basic Setup</h5>
                         <div class="code-block mb-3">
-                            <pre><code>&lt;form id="basicForm"&gt;
+                            <pre><code>&lt;form id="myForm"&gt;
   &lt;input type="text" name="name" required&gt;
   &lt;input type="email" name="email" required&gt;
 &lt;/form&gt;
+
+&lt;script&gt;
+  const validator = new BeastValidator('#myForm', {
+    onSuccess: () =&gt; alert('Form is valid!'),
+  });
+&lt;/script&gt;
                             </code></pre>
                         </div>
-                        <div class="code-block">
-                            <pre><code>const validator = new BeastValidator('#basicForm');</code></pre>
+
+                        <h5 class="mt-4">🧠 Custom Validator</h5>
+                        <div class="code-block mb-3">
+                            <pre><code>&lt;input name="username" data-validator="checkUser"&gt;
+
+&lt;script&gt;
+  validator.addValidator("checkUser", async (field) =&gt; {
+    await new Promise(r =&gt; setTimeout(r, 300));
+    return field.value === "admin" ? "Username not allowed" : true;
+  });
+&lt;/script&gt;
+                            </code></pre>
+                        </div>
+
+                        <h5 class="mt-4">📋 Error Summary</h5>
+                        <div class="code-block mb-3">
+                            <pre><code>&lt;div id="summary"&gt;&lt;/div&gt;
+
+const validator = new BeastValidator('#form', {
+  errorSummaryTarget: '#summary',
+});
+                            </code></pre>
+                        </div>
+
+                        <h5 class="mt-4">🌍 Switch Language</h5>
+                        <div class="code-block mb-3">
+                            <pre><code>validator.setLanguage('de'); // Change to German
+                            </code></pre>
+                        </div>
+
+                        <h5 class="mt-4">🧭 Step Navigation</h5>
+                        <div class="code-block mb-3">
+                            <pre><code>&lt;div class="step-section" data-step="1"&gt;...&lt;/div&gt;
+&lt;button data-next&gt;Next&lt;/button&gt;
+
+new BeastValidator('#stepForm', {
+  initSteps: true,
+  onStepChange: step =&gt; console.log('Step:', step)
+});
+                            </code></pre>
                         </div>
                     </section>
+
+                    <section id="faq" class="mb-5">
+                        <h2>❓ Frequently Asked Questions</h2>
+                        <div class="accordion" id="faqAccordion">
+
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="faq1-heading">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1" aria-expanded="true">
+                                        💡 What browsers does BeastValidator support?
+                                    </button>
+                                </h2>
+                                <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        BeastValidator works in all modern browsers (Chrome, Firefox, Safari, Edge). IE is not officially supported.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="faq2-heading">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                        🚀 Can I use it in React/Vue/Alpine.js apps?
+                                    </button>
+                                </h2>
+                                <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        Absolutely. BeastValidator works with any DOM-based form, so it's fully compatible with React, Vue, Alpine.js, or Stimulus when forms are rendered normally in the DOM.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="faq3-heading">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                        🎨 How do I theme or style the error messages?
+                                    </button>
+                                </h2>
+                                <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        BeastValidator supports themes via the <code>theme</code> option. You can use built-in themes (like <code>bootstrap</code>) or define your own using <code>registerTheme()</code>.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="faq4-heading">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                        🧠 Can I validate with AJAX or call APIs?
+                                    </button>
+                                </h2>
+                                <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        Yes! Use <code>addValidator()</code> to register async functions and call APIs in real-time. BeastValidator supports <code>async</code> validation by default.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="faq5-heading">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+                                        🔁 How do I reset the form or clear errors?
+                                    </button>
+                                </h2>
+                                <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        Use the built-in <code>validator.reset()</code> method to remove all errors, tooltips, and reset step tracking if used.
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </section>
+
+                    <section id="credit" class="mb-5">
+                        <h2>👨‍💻 About the Author</h2>
+                        <p>
+                        Built with 💚 by <a href="https://github.com/hollodk" target="_blank">Michael Holm</a>.<br>
+                        Maintained under <strong>Clubmaster GmbH</strong> in Switzerland.
+                        </p>
+                    </section>
+
                 </main>
             </div>
         </div>
@@ -212,7 +489,6 @@
                 debug: true,
                 autoSubmit: false,
                 theme: 'bootstrap',
-                errorSummaryTarget: '#errorSummary',
                 onSuccess: () => alert("✅ Basic form submitted!"),
             });
 
@@ -228,7 +504,6 @@
 
             const advancedForm = new BeastValidator(document.getElementById('advancedForm'), {
                 debug: true,
-                language: 'pirate',
                 autoSubmit: false,
                 onSuccess: () => alert("✅ Advanced form submitted!"),
             });
@@ -244,6 +519,45 @@
             function resetAdvancedForm() {
                 advancedForm.reset();
             }
+
+            const customValidatorForm = new BeastValidator('customValidatorForm', {
+                debug: true,
+                autoSubmit: false,
+                onSuccess: () => alert("✅ Custom validator passed!"),
+            });
+
+            customValidatorForm.addValidator('containsBeast', (field) => {
+                const value = field.value.trim().toLowerCase();
+                return value.includes('beast') ? true : 'The word "beast" must be included.';
+            });
+
+            const summaryForm = new BeastValidator('summaryForm', {
+                debug: true,
+                autoSubmit: false,
+                errorSummaryTarget: '#summaryOutput',
+                focusFirst: true,
+                onSuccess: () => alert("✅ All fields passed!"),
+            });
+
+            const playgroundValidator = new BeastValidator('playgroundForm', {
+                language: 'en',
+                theme: 'beast',
+                debug: true,
+                autoSubmit: false,
+                onSuccess: () => alert("✅ Playground form submitted!"),
+            });
+
+            document.getElementById('languageSelect').addEventListener('change', (e) => {
+                playgroundValidator.setLanguage(e.target.value);
+                playgroundValidator.validate();
+            });
+
+            document.getElementById('themeSelect').addEventListener('change', (e) => {
+                playgroundValidator.reset();
+                playgroundValidator.setTheme(e.target.value);
+                playgroundValidator.validate();
+            });
+
         </script>
     </body>
 </html>

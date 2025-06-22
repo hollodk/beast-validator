@@ -119,6 +119,8 @@ class BeastValidator {
                 email: 'Please enter a valid email address',
                 minlength: (n) => `Minimum length is ${n} characters`,
                 maxlength: (n) => `Maximum length is ${n} characters`,
+                minValue: (n) => `Must be at least ${n}`,
+                maxValue: (n) => `Must be at most ${n}`,
                 match: 'Values do not match',
                 invalidFormat: 'Invalid format'
             },
@@ -127,6 +129,8 @@ class BeastValidator {
                 email: 'Indtast en gyldig e-mailadresse',
                 minlength: (n) => `Minimumslængde er ${n} tegn`,
                 maxlength: (n) => `Maksimallængde er ${n} tegn`,
+                minValue: (n) => `Skal være mindst ${n}`,
+                maxValue: (n) => `Må højst være ${n}`,
                 match: 'Værdierne stemmer ikke overens',
                 invalidFormat: 'Ugyldigt format'
             },
@@ -135,6 +139,8 @@ class BeastValidator {
                 email: 'Bitte geben Sie eine gültige E-Mail-Adresse ein',
                 minlength: (n) => `Mindestens ${n} Zeichen erforderlich`,
                 maxlength: (n) => `Maximal ${n} Zeichen erlaubt`,
+                minValue: (n) => `Mindestens ${n} erforderlich`,
+                maxValue: (n) => `Höchstens ${n} erlaubt`,
                 match: 'Die Werte stimmen nicht überein',
                 invalidFormat: 'Ungültiges Format'
             },
@@ -143,6 +149,8 @@ class BeastValidator {
                 email: 'That be no proper sea-mail address!',
                 minlength: (n) => `Ye need at least ${n} scraggly letters`,
                 maxlength: (n) => `Whoa! No more than ${n} runes, ye scallywag!`,
+                minValue: (n) => `Ye need at least ${n} doubloons`,
+                maxValue: (n) => `No more than ${n}, or ye’ll walk the plank!`,
                 match: 'These don’t be matchin’, ye landlubber!',
                 invalidFormat: 'That be a cursed format, it is!'
             },
@@ -328,6 +336,15 @@ class BeastValidator {
             }
         }
 
+        // Range
+        if (valid && field.dataset.pattern && field.value) {
+            if (!this.checkPattern(field)) {
+                valid = false;
+                errorMessage = messages.invalidFormat || 'Invalid format';
+            }
+        }
+
+
         // Match
         if (valid && field.dataset.match && field.value) {
             if (!this.checkMatch(field)) {
@@ -342,6 +359,15 @@ class BeastValidator {
             if (field.value.length < minLength) {
                 valid = false;
                 errorMessage = messages.minlength?.(minLength) || `Minimum length is ${minLength}`;
+            }
+        }
+
+        // Numeric range (data-min / data-max)
+        if (valid && (field.dataset.min || field.dataset.max) && field.value) {
+            const rangeCheck = this.checkNumericRange(field);
+            if (!rangeCheck.valid) {
+                valid = false;
+                errorMessage = rangeCheck.message;
             }
         }
 
@@ -443,11 +469,10 @@ class BeastValidator {
 
     clearErrors() {
         this.log('[VALIDATION] Clearing all error messages');
-        this.form.querySelectorAll(`.${this.errorContainerClass}`).forEach(el => {
-            el.id ? el.innerHTML = '' : el.remove();
-        });
 
-        document.querySelectorAll('.' + this.tooltipClass).forEach(el => el.remove());
+        this.getAllFields().forEach(field => {
+            this.clearErrorsFor(field);
+        });
     }
 
     clearErrorsFor(field) {
@@ -465,6 +490,8 @@ class BeastValidator {
                 el.remove();
             }
         });
+
+        this.clearThemeClasses(field);
     }
 
     // utility methods
@@ -616,6 +643,11 @@ class BeastValidator {
         if (cls) field.classList.add(cls);
     }
 
+    setTheme(theme) {
+        this.theme = theme;
+        this.log(`[THEME] Theme set to "${theme}"`);
+    }
+
     setLanguage(lang) {
         if (this.messages[lang]) {
             this.language = lang;
@@ -630,6 +662,11 @@ class BeastValidator {
             ...this.messages[lang] || {},
             ...map
         };
+    }
+
+    addMessage(lang, key, message) {
+        if (!this.messages[lang]) this.messages[lang] = {};
+        this.messages[lang][key] = message;
     }
 
     getAllFields() {
@@ -742,6 +779,31 @@ class BeastValidator {
     checkEmail(value) {
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailPattern.test(value);
+    }
+
+    checkNumericRange(field) {
+        const value = parseFloat(field.value);
+        if (isNaN(value)) return { valid: true };
+
+        const min = parseFloat(field.dataset.min);
+        const max = parseFloat(field.dataset.max);
+
+        if (!isNaN(min) && value < min) {
+            return {
+                valid: false,
+                message: this.messages[this.language]?.minValue?.(min) || `Must be at least ${min}`,
+
+            };
+        }
+
+        if (!isNaN(max) && value > max) {
+            return {
+                valid: false,
+                message: this.messages[this.language]?.maxValue?.(max) || `Must be at most ${min}`,
+            };
+        }
+
+        return { valid: true };
     }
 
     async checkCustomValidator(field) {
