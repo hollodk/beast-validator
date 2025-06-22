@@ -17,6 +17,7 @@ class BeastValidator {
         onInit = null,
         onStepChange = null,
         language = 'en',
+        theme = 'beast',
     } = {}) {
         this.errorContainerClass = errorContainerClass;
         this.tooltipClass = tooltipClass;
@@ -34,7 +35,8 @@ class BeastValidator {
         this.onSuccess = onSuccess;
         this.onInit = onInit;
         this.onStepChange = onStepChange;
-        this.language = language,
+        this.language = language;
+        this.theme = theme;
 
         this.form = null;
         this.customValidators = {};
@@ -454,8 +456,8 @@ class BeastValidator {
         }
 
         // 🧼 Handle invalid
+        this.clearThemeClasses(field);
         field.classList.remove('validating');
-        field.classList.remove('valid', 'invalid');
 
         if (!valid) {
             this.log(`[VALIDATION] Field "${name}" failed: ${errorMessage}`);
@@ -486,14 +488,37 @@ class BeastValidator {
                 }, { once: true });
             }
 
-            field.classList.add('invalid');
+            this.applyThemeClass(field, 'invalid');
         } else {
             delete field.dataset.dirty;
-            field.classList.add('valid');
+            this.applyThemeClass(field, 'valid');
             this.log(`[VALIDATION] Field "${name}" passed`);
         }
 
         return valid;
+    }
+
+    clearThemeClasses(field) {
+        if (this.theme === 'none') return;
+
+        const classes = {
+            beast: ['valid', 'invalid'],
+            bootstrap: ['is-valid', 'is-invalid'],
+        };
+
+        (classes[this.theme] || []).forEach(cls => field.classList.remove(cls));
+    }
+
+    applyThemeClass(field, type) {
+        if (this.theme === 'none') return;
+
+        const map = {
+            beast: { valid: 'valid', invalid: 'invalid' },
+            bootstrap: { valid: 'is-valid', invalid: 'is-invalid' },
+        };
+
+        const cls = map[this.theme]?.[type];
+        if (cls) field.classList.add(cls);
     }
 
     clearErrorsFor(field) {

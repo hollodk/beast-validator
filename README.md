@@ -257,8 +257,8 @@ validator.addValidator('checkUsername', async (field) => {
 - [x] CDN / NPM / Composer support
 - [x] Visual success indicators
 - [x] `reset()` method
-- [ ] TypeScript types
 - [x] Localization & i18n
+- [ ] TypeScript types
 - [ ] Error summary container
 
 ---
