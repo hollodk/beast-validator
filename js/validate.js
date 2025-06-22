@@ -267,16 +267,7 @@ class BeastValidator {
     }
 
     async validateField(field) {
-        const name = field.name;
-        const type = field.type;
-        const isRequired = field.hasAttribute('required');
-        const form = this.form;
-        const messages = this.messages[this.language] || {};
-        let valid = true;
-        let errorMessage = '';
-        let errorTarget = field;
-
-        this.log(`[VALIDATION] Validating field "${name}", type "${type}"`);
+        this.log(`[VALIDATION] Validating field "${field.name}", type "${field.type}"`);
         this.clearErrorsFor(field);
         field.classList.add('validating');
 
@@ -286,137 +277,130 @@ class BeastValidator {
             await new Promise(resolve => setTimeout(resolve, sleep * 1000));
         }
 
-        // 🔴 Required
-        if (isRequired) {
-            if (type === 'checkbox') {
-                valid = field.checked;
-            } else if (type === 'radio') {
-                valid = !!form.querySelector(`input[type="radio"][name="${name}"]:checked`);
-                const radios = form.querySelectorAll(`input[type="radio"][name="${name}"]`);
-                errorTarget = radios[radios.length - 1];
-            } else if (type === 'file') {
-                valid = field.files.length > 0;
-            } else {
-                valid = field.value.trim() !== '';
-            }
-            if (!valid) {
-                errorMessage = field.dataset.errorMessage || messages.required || 'This field is required';
-            }
+        const { valid, errorMessage, errorTarget } = await this.runValidationRules(field);
+
+        field.classList.remove('validating');
+        this.clearThemeClasses(field);
+
+        if (!valid) {
+            field.dataset.dirty = 'dirty';
+            this.renderError(field, errorMessage, errorTarget);
+            this.applyThemeClass(field, 'invalid');
+        } else {
+            delete field.dataset.dirty;
+            this.applyThemeClass(field, 'valid');
+            this.log(`[VALIDATION] Field "${field.name}" passed`);
         }
 
-        // 🟠 Checkbox group min
-        if (type === 'checkbox' && field.dataset.min) {
-            const boxes = form.querySelectorAll(`input[type="checkbox"][name="${name}"]`);
-            const checkedCount = Array.from(boxes).filter(b => b.checked).length;
-            const min = parseInt(field.dataset.min, 10);
-            if (checkedCount < min) {
+        return valid;
+    }
+
+    async runValidationRules(field) {
+        const name = field.name;
+        const type = field.type;
+        const form = this.form;
+        const messages = this.messages[this.language] || {};
+        let valid = true;
+        let errorMessage = '';
+        let errorTarget = field;
+
+        // Required
+        if (!await this.checkRequired(field)) {
+            valid = false;
+            errorMessage = field.dataset.errorMessage || messages.required || 'This field is required';
+        }
+
+        // Checkbox group min
+        if (valid && type === 'checkbox' && field.dataset.min) {
+            const minResult = this.checkCheckboxGroupMin(field);
+            if (!minResult.valid) {
                 valid = false;
-                errorMessage = `Select at least ${min}`;
-                errorTarget = boxes[boxes.length - 1];
+                errorMessage = minResult.message;
+                errorTarget = minResult.errorTarget;
             }
         }
 
-        // 🔵 Pattern check
-        if (field.dataset.pattern && field.value) {
-            const regex = new RegExp(field.dataset.pattern);
-            if (!regex.test(field.value)) {
+        // Pattern
+        if (valid && field.dataset.pattern && field.value) {
+            if (!this.checkPattern(field)) {
                 valid = false;
                 errorMessage = messages.invalidFormat || 'Invalid format';
             }
         }
 
-        // 🔁 Match check
-        if (field.dataset.match && field.value) {
-            const otherField = form.querySelector(`[name="${field.dataset.match}"]`);
-            if (otherField && otherField.value !== field.value) {
+        // Match
+        if (valid && field.dataset.match && field.value) {
+            if (!this.checkMatch(field)) {
                 valid = false;
                 errorMessage = messages.match || 'Values do not match';
             }
         }
 
-        // 📏 Min length
-        if (field.hasAttribute('minlength') && field.value) {
+        // Min length
+        if (valid && field.hasAttribute('minlength') && field.value) {
             const minLength = parseInt(field.getAttribute('minlength'), 10);
             if (field.value.length < minLength) {
                 valid = false;
-                errorMessage = messages.minlength?.(minLength) || `Minimum length is ${minLength} characters`;
+                errorMessage = messages.minlength?.(minLength) || `Minimum length is ${minLength}`;
             }
         }
 
-        // 📏 Max length
-        if (field.hasAttribute('maxlength') && field.value) {
+        // Max length
+        if (valid && field.hasAttribute('maxlength') && field.value) {
             const maxLength = parseInt(field.getAttribute('maxlength'), 10);
             if (field.value.length > maxLength) {
                 valid = false;
-                errorMessage = messages.maxlength?.(maxLength) || `Maximum length is ${maxLength} characters`;
+                errorMessage = messages.maxlength?.(maxLength) || `Maximum length is ${maxLength}`;
             }
         }
 
-        // 📧 Email pattern
-        if (type === 'email' && field.value) {
-            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailPattern.test(field.value)) {
+        // Email
+        if (valid && type === 'email' && field.value) {
+            if (!this.checkEmail(field.value)) {
                 valid = false;
                 errorMessage = messages.email || 'Please enter a valid email address';
             }
         }
 
-        // 🧠 Custom validator
-        if (field.dataset.validator) {
-            const validatorName = field.dataset.validator;
-            const validatorFn = this.customValidators[validatorName];
-            if (typeof validatorFn === 'function') {
-                const result = await validatorFn(field);
-                if (result !== true) {
-                    valid = false;
-                    errorMessage = typeof result === 'string' ? result : 'Invalid value';
-                }
+        // Custom validator
+        if (valid && field.dataset.validator) {
+            const result = await this.checkCustomValidator(field);
+            if (result !== true) {
+                valid = false;
+                errorMessage = typeof result === 'string' ? result : 'Invalid value';
+            }
+        }
+
+        return { valid, errorMessage, errorTarget };
+    }
+
+    renderError(field, message, target) {
+        this.log(`[VALIDATION] Field "${field.name}" failed: ${message}`);
+        this.createTooltip(field, target, message);
+
+        if (this.helperText) {
+            const containerId = field.dataset.errorContainer;
+            const container = containerId ? document.getElementById(containerId) : null;
+
+            if (container) {
+                container.textContent = message;
+                container.dataset.referenceId = field.dataset.beastId;
             } else {
-                this.log(`[WARN] Custom validator "${validatorName}" not found`);
+                this.clearErrorsFor(field);
+                const error = document.createElement('div');
+                error.className = this.errorContainerClass;
+                error.dataset.referenceId = field.dataset.beastId;
+                error.textContent = message;
+                target.insertAdjacentElement('afterend', error);
             }
         }
 
-        // 🧼 Handle invalid
-        this.clearThemeClasses(field);
-        field.classList.remove('validating');
-
-        if (!valid) {
-            this.log(`[VALIDATION] Field "${name}" failed: ${errorMessage}`);
-
-            field.dataset.dirty = 'dirty';
-            this.createTooltip(field, errorTarget, errorMessage);
-
-            if (this.helperText) {
-                const containerId = field.dataset.errorContainer;
-                if (containerId && document.getElementById(containerId)) {
-                    const container = document.getElementById(containerId);
-                    container.textContent = errorMessage;
-                    container.dataset.referenceId = field.dataset.beastId;
-                } else {
-                    this.clearErrorsFor(field);
-                    const error = document.createElement('div');
-                    error.className = this.errorContainerClass;
-                    error.dataset.referenceId = field.dataset.beastId;
-                    error.textContent = errorMessage;
-                    errorTarget.insertAdjacentElement('afterend', error);
-                }
-            }
-
-            if (this.shakeInput) {
-                field.classList.add('shake');
-                field.addEventListener('animationend', () => {
-                    field.classList.remove('shake');
-                }, { once: true });
-            }
-
-            this.applyThemeClass(field, 'invalid');
-        } else {
-            delete field.dataset.dirty;
-            this.applyThemeClass(field, 'valid');
-            this.log(`[VALIDATION] Field "${name}" passed`);
+        if (this.shakeInput) {
+            field.classList.add('shake');
+            field.addEventListener('animationend', () => {
+                field.classList.remove('shake');
+            }, { once: true });
         }
-
-        return valid;
     }
 
     validateCurrentStep() {
@@ -714,4 +698,61 @@ class BeastValidator {
 
         this.log(`[SUMMARY] Bound to ${selector}`);
     }
+
+    checkRequired(field) {
+        const type = field.type;
+        const name = field.name;
+        const form = this.form;
+
+        if (!field.hasAttribute('required')) return true;
+
+        if (type === 'checkbox') return field.checked;
+        if (type === 'radio') return !!form.querySelector(`input[type="radio"][name="${name}"]:checked`);
+        if (type === 'file') return field.files.length > 0;
+        return field.value.trim() !== '';
+    }
+
+    checkCheckboxGroupMin(field) {
+        const name = field.name;
+        const min = parseInt(field.dataset.min, 10);
+        const boxes = this.form.querySelectorAll(`input[type="checkbox"][name="${name}"]`);
+        const checkedCount = Array.from(boxes).filter(b => b.checked).length;
+
+        if (checkedCount < min) {
+            return {
+                valid: false,
+                message: `Select at least ${min}`,
+                errorTarget: boxes[boxes.length - 1]
+            };
+        }
+        return { valid: true };
+    }
+
+    checkPattern(field) {
+        const regex = new RegExp(field.dataset.pattern);
+        return regex.test(field.value);
+    }
+
+    checkMatch(field) {
+        const matchName = field.dataset.match;
+        const other = this.form.querySelector(`[name="${matchName}"]`);
+        return other && other.value === field.value;
+    }
+
+    checkEmail(value) {
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailPattern.test(value);
+    }
+
+    async checkCustomValidator(field) {
+        const validatorName = field.dataset.validator;
+        const validatorFn = this.customValidators[validatorName];
+        if (typeof validatorFn === 'function') {
+            return await validatorFn(field);
+        } else {
+            this.log(`[WARN] Custom validator "${validatorName}" not found`);
+            return true;
+        }
+    }
+
 }
