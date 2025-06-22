@@ -361,9 +361,9 @@ new BeastValidator('myForm', { debug: true });
 - [x] Multilingual support
 - [x] Shake animation
 - [x] Error summary rendering
+- [x] Build files in dist
+- [x] Build minified version
 - [ ] Age filter
-- [ ] Build files in dist
-- [ ] Build minified version
 - [ ] TypeScript types
 - [ ] Accessibility improvements
 
