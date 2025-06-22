@@ -361,6 +361,9 @@ new BeastValidator('myForm', { debug: true });
 - [x] Multilingual support
 - [x] Shake animation
 - [x] Error summary rendering
+- [ ] Age filter
+- [ ] Build files in dist
+- [ ] Build minified version
 - [ ] TypeScript types
 - [ ] Accessibility improvements
 
@@ -384,7 +387,6 @@ git clone https://github.com/hollodk/beast-validator.git
 ## 🌍 Browser Support
 
 - ✅ Chrome, Firefox, Safari, Edge, Opera
-- ❌ Internet Explorer not supported
 
 ---
 
