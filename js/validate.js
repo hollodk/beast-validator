@@ -222,22 +222,22 @@ class BeastValidator {
                 const currentStepSection = this.form.querySelector(`[data-step="${this.currentStep}"]`);
                 if (!currentStepSection) return;
 
-                const btn = currentStepSection.querySelector('[data-next]');
-                if (btn) {
-                    this.deactivateButton(btn);
-                    await new Promise(resolve => setTimeout(resolve, 300)); // simulate loading animation
-                }
-
                 const isTextInput = ['INPUT'].includes(e.target.tagName);
                 const isSubmitType = e.target.type === 'submit';
 
                 if (isTextInput && !isSubmitType) {
-                    e.preventDefault();
+                    const btn = currentStepSection.querySelector('[data-next]');
+                    if (btn) {
+                        this.deactivateButton(btn);
+                        await new Promise(resolve => setTimeout(resolve, 300)); // simulate loading animation
+                    }
 
                     const forceFullValidation = currentStepSection.hasAttribute('data-validate');
                     const valid = forceFullValidation
                         ? await this.validate()
                         : await this.validateCurrentStep();
+
+                    this.log(`[STEP] Enter clicked. Full validation? ${forceFullValidation}`);
 
                     if (btn) {
                         this.activateButton(btn);
