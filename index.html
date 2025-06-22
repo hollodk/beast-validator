@@ -72,7 +72,7 @@
                         </div>
 
                         <div class="mt-4 text-muted small">
-                            Version: <code>1.0.9</code> &middot; Last updated: <span id="lastUpdated">June 2025</span>
+                            Version: <code>1.0.10</code> &middot; Last updated: <span id="lastUpdated">June 2025</span>
                         </div>
                     </header>
 
@@ -318,7 +318,7 @@
   const validator = new BeastValidator('#myForm', {
     debug: true,
     autoSubmit: false,
-    onSuccess: () =&gt; alert("Form is valid!"),
+    onSuccess: (json) =&gt; alert("Form is valid!"),
   });
 &lt;/script&gt;
                         </code></pre>
@@ -362,7 +362,7 @@
 
 &lt;script&gt;
   const validator = new BeastValidator('#myForm', {
-    onSuccess: () =&gt; alert('Form is valid!'),
+    onSuccess: (json) =&gt; alert('Form is valid!'),
   });
 &lt;/script&gt;
                             </code></pre>
@@ -501,7 +501,10 @@ new BeastValidator('#stepForm', {
                 debug: true,
                 autoSubmit: false,
                 theme: 'bootstrap',
-                onSuccess: () => alert("✅ Basic form submitted!"),
+                onSuccess: (json) => {
+                    alert("✅ Basic form submitted!");
+                    console.log(json);
+                },
             });
 
             const stepForm = new BeastValidator('stepForm', {
@@ -510,14 +513,14 @@ new BeastValidator('#stepForm', {
                 autoSubmit: false,
                 tooltips: 'top-center',
                 helperText: false,
-                onSuccess: () => alert("✅ Step form submitted!"),
+                onSuccess: (json) => alert("✅ Step form submitted!"),
                 onStepChange: (step) => console.log('You are by step '+step),
             });
 
             const advancedForm = new BeastValidator(document.getElementById('advancedForm'), {
                 debug: true,
                 autoSubmit: false,
-                onSuccess: () => alert("✅ Advanced form submitted!"),
+                onSuccess: (json) => alert("✅ Advanced form submitted!"),
             });
 
             advancedForm.addValidator("checkUsername", async (field) => {
@@ -535,7 +538,7 @@ new BeastValidator('#stepForm', {
             const customValidatorForm = new BeastValidator('customValidatorForm', {
                 debug: true,
                 autoSubmit: false,
-                onSuccess: () => alert("✅ Custom validator passed!"),
+                onSuccess: (json) => alert("✅ Custom validator passed!"),
             });
 
             customValidatorForm.addValidator('containsBeast', (field) => {
@@ -548,7 +551,7 @@ new BeastValidator('#stepForm', {
                 autoSubmit: false,
                 errorSummaryTarget: '#summaryOutput',
                 focusFirst: true,
-                onSuccess: () => alert("✅ All fields passed!"),
+                onSuccess: (json) => alert("✅ All fields passed!"),
             });
 
             const playgroundValidator = new BeastValidator('playgroundForm', {
@@ -556,7 +559,7 @@ new BeastValidator('#stepForm', {
                 theme: 'beast',
                 debug: true,
                 autoSubmit: false,
-                onSuccess: () => alert("✅ Playground form submitted!"),
+                onSuccess: (json) => alert("✅ Playground form submitted!"),
             });
 
             document.getElementById('languageSelect').addEventListener('change', (e) => {

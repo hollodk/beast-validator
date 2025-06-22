@@ -267,7 +267,21 @@ class BeastValidator {
             }
 
             if (typeof this.onSuccess === 'function') {
-                this.onSuccess();
+                const formData = {};
+                this.getAllFields().forEach(field => {
+                    if (field.name && !field.disabled) {
+                        if (field.type === 'radio') {
+                            if (field.checked) formData[field.name] = field.value;
+                        } else if (field.type === 'checkbox') {
+                            if (!formData[field.name]) formData[field.name] = [];
+                            if (field.checked) formData[field.name].push(field.value);
+                        } else {
+                            formData[field.name] = field.value;
+                        }
+                    }
+                });
+
+                this.onSuccess(formData);
             }
         }
 

@@ -19,6 +19,7 @@
 - 🫨 Shake animation for invalid fields
 - ⬇️ Scrolls to and focuses first invalid field
 - 🧩 `onFail`, `onSuccess`, `onInit` callbacks
+- 🧩 Turn form data into json object `onSuccess(json)`
 - 💬 Tooltip support in multiple positions
 - 🌍 Multilingual error messages (EN, DA, DE, Pirate)
 - ⏳ Delayed validation with `data-sleep`
