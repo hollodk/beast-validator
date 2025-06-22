@@ -64,6 +64,7 @@ class BeastValidator {
             this.form.setAttribute('novalidate', 'true');
         }
 
+        this.initLanguage();
         this.attachListener();
 
         const allFields = this.getAllFields();
@@ -77,42 +78,27 @@ class BeastValidator {
             }
         });
 
-        if (this.validateOnChange) {
-            allFields.forEach(field => {
-                field.addEventListener('change', () => {
-                    this.log(`[EVENT] Change detected on "${field.name}"`);
-                    this.validateField(field);
-                });
-                field.addEventListener('input', () => {
-                    if (field.dataset.dirty === 'dirty') {
-                        this.log(`[EVENT] Input on dirty field "${field.name}"`);
-                        this.validateField(field);
-                    }
-                });
+        if (this.errorSummaryTarget) {
+            this.setErrorSummaryTarget(this.errorSummaryTarget, {
+                icon: '⚠️',
+                heading: 'Errors found:',
+                scrollTo: true
             });
         }
 
-        this.form.querySelectorAll('[data-next]').forEach(btn => {
-            btn.addEventListener('click', async () => {
-                const currentStepSection = this.form.querySelector(`[data-step="${this.currentStep}"]`);
-                const forceFullValidation = currentStepSection && currentStepSection.hasAttribute('data-validate');
+        if (this.initSteps === true) {
+            this.currentStep = 1;
+            this.showStep(this.currentStep);
+            this.log('[INIT] Step flow initialized');
+        }
 
-                this.log(`[STEP] Next button clicked. Full validation? ${forceFullValidation}`);
+        if (typeof this.onInit === 'function') {
+            this.log('[INIT] onInit callback triggered');
+            this.onInit();
+        }
+    }
 
-                const valid = forceFullValidation
-                    ? await this.validate()
-                    : await this.validateCurrentStep();
-
-                if (valid) this.nextStep();
-            });
-        });
-
-        this.form.querySelectorAll('[data-prev]').forEach(btn => {
-            btn.addEventListener('click', () => {
-                this.prevStep();
-            });
-        });
-
+    initLanguage() {
         this.messages = {
             en: {
                 required: 'This field is required',
@@ -155,25 +141,6 @@ class BeastValidator {
                 invalidFormat: 'That be a cursed format, it is!'
             },
         };
-
-        if (this.errorSummaryTarget) {
-            this.setErrorSummaryTarget(this.errorSummaryTarget, {
-                icon: '⚠️',
-                heading: 'Errors found:',
-                scrollTo: true
-            });
-        }
-
-        if (this.initSteps === true) {
-            this.currentStep = 1;
-            this.showStep(this.currentStep);
-            this.log('[INIT] Step flow initialized');
-        }
-
-        if (typeof this.onInit === 'function') {
-            this.log('[INIT] onInit callback triggered');
-            this.onInit();
-        }
     }
 
     reset() {
@@ -187,6 +154,8 @@ class BeastValidator {
     }
 
     attachListener() {
+        const allFields = this.getAllFields();
+
         this.form.addEventListener('submit', async (e) => {
             this.log('[EVENT] Submit triggered');
             e.preventDefault();
@@ -213,6 +182,63 @@ class BeastValidator {
                 this.log('[EVENT] Form invalid. Submission aborted.');
                 this.activateButton(submitBtn);
             }
+        });
+
+        if (this.validateOnChange) {
+            allFields.forEach(field => {
+                field.addEventListener('change', () => {
+                    this.log(`[EVENT] Change detected on "${field.name}"`);
+                    this.validateField(field);
+                });
+                field.addEventListener('input', () => {
+                    if (field.dataset.dirty === 'dirty') {
+                        this.log(`[EVENT] Input on dirty field "${field.name}"`);
+                        this.validateField(field);
+                    }
+                });
+            });
+        }
+
+        this.form.querySelectorAll('[data-next]').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const currentStepSection = this.form.querySelector(`[data-step="${this.currentStep}"]`);
+                const forceFullValidation = currentStepSection && currentStepSection.hasAttribute('data-validate');
+
+                this.log(`[STEP] Next button clicked. Full validation? ${forceFullValidation}`);
+
+                const valid = forceFullValidation
+                    ? await this.validate()
+                    : await this.validateCurrentStep();
+
+                if (valid) this.nextStep();
+            });
+        });
+
+        this.form.addEventListener('keydown', async (e) => {
+            if (e.key === 'Enter') {
+                const currentStepSection = this.form.querySelector(`[data-step="${this.currentStep}"]`);
+                if (!currentStepSection) return;
+
+                const isTextInput = ['INPUT'].includes(e.target.tagName);
+                const isSubmitType = e.target.type === 'submit';
+
+                if (isTextInput && !isSubmitType) {
+                    e.preventDefault();
+
+                    const forceFullValidation = currentStepSection.hasAttribute('data-validate');
+                    const valid = forceFullValidation
+                        ? await this.validate()
+                        : await this.validateCurrentStep();
+
+                    if (valid) this.nextStep();
+                }
+            }
+        });
+
+        this.form.querySelectorAll('[data-prev]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.prevStep();
+            });
         });
     }
 
