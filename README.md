@@ -60,6 +60,8 @@ new BeastValidator('myForm', {
 
 3. **Enjoy automatic validation!**
 
+---
+
 ## 🚀 Installation
 
 ### ✅ CDN
