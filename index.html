@@ -65,6 +65,8 @@
                             </div>
                             <button type="submit" class="btn btn-success">Submit</button>
                         </form>
+
+                        <div id="errorSummary"></div>
                     </section>
 
                     <section id="steps" class="mb-5">
@@ -210,6 +212,7 @@
                 debug: true,
                 autoSubmit: false,
                 theme: 'bootstrap',
+                errorSummaryTarget: '#errorSummary',
                 onSuccess: () => alert("✅ Basic form submitted!"),
             });
 

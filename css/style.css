@@ -98,4 +98,27 @@ select.invalid::after {
     font-size: 14px;
     color: #E53935;
 }
-
+.beast-summary-box {
+    background: #ffeaea;
+    border: 1px solid #e53935;
+    padding: 12px;
+    margin-bottom: 1em;
+    border-radius: 6px;
+    font-size: 0.95em;
+}
+.beast-summary-box strong {
+    display: block;
+    margin-bottom: 6px;
+    color: #b71c1c;
+}
+.beast-summary-list {
+    padding-left: 20px;
+}
+.beast-summary-list li {
+    margin-bottom: 4px;
+}
+.beast-summary-list a {
+    color: #d32f2f;
+    text-decoration: underline;
+    cursor: pointer;
+}

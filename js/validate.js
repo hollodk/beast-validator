@@ -18,6 +18,7 @@ class BeastValidator {
         onStepChange = null,
         language = 'en',
         theme = 'beast',
+        errorSummaryTarget = null,
     } = {}) {
         this.errorContainerClass = errorContainerClass;
         this.tooltipClass = tooltipClass;
@@ -37,6 +38,7 @@ class BeastValidator {
         this.onStepChange = onStepChange;
         this.language = language;
         this.theme = theme;
+        this.errorSummaryTarget = errorSummaryTarget;
 
         this.form = null;
         this.customValidators = {};
@@ -144,6 +146,14 @@ class BeastValidator {
                 invalidFormat: 'That be a cursed format, it is!'
             },
         };
+
+        if (this.errorSummaryTarget) {
+            this.setErrorSummaryTarget(this.errorSummaryTarget, {
+                icon: '⚠️',
+                heading: 'Errors found:',
+                scrollTo: true
+            });
+        }
 
         if (this.initSteps === true) {
             this.currentStep = 1;
@@ -294,6 +304,10 @@ class BeastValidator {
                 if (typeof this.onFail === 'function') {
                     this.onFail(failedFields);
                 }
+
+                if (this.errorSummaryTarget) {
+                    this.renderErrorSummary(failedFields);
+                }
             }
 
             return isValid;
@@ -335,11 +349,23 @@ class BeastValidator {
             this.log('[VALIDATION] Invalid fields detected');
             firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
             firstInvalid.focus({ preventScroll: true });
+
             if (typeof this.onFail === 'function') {
                 this.onFail(failedFields);
             }
-        } else if (isValid && typeof this.onSuccess === 'function') {
-            this.onSuccess();
+
+            if (this.errorSummaryTarget) {
+                this.renderErrorSummary(failedFields);
+            }
+
+        } else if (isValid) {
+            if (this.errorSummaryTarget) {
+                this.errorSummaryTarget.innerHTML = '';
+            }
+
+            if (typeof this.onSuccess === 'function') {
+                this.onSuccess();
+            }
         }
 
         return isValid;
@@ -596,5 +622,78 @@ class BeastValidator {
         this.log(`[CUSTOM] Adding custom validator "${name}"`);
 
         this.customValidators[name] = fn;
+    }
+
+    setErrorSummaryTarget(selector, options = {}) {
+        const el = document.querySelector(selector);
+        if (!el) {
+            this.log(`[SUMMARY] Target "${selector}" not found`);
+            return;
+        }
+
+        this.errorSummaryTarget = el;
+        this.errorSummaryOptions = {
+            ...this.errorSummaryOptions,
+            ...options
+        };
+
+        this.log(`[SUMMARY] Bound to ${selector}`);
+    }
+
+    renderErrorSummary(fields) {
+        if (!this.errorSummaryTarget) return;
+
+        this.errorSummaryOptions = {
+            scrollTo: true,
+            heading: 'Please fix the following:',
+            icon: '❌',
+        };
+
+        const { scrollTo, heading, icon } = this.errorSummaryOptions;
+
+        const container = this.errorSummaryTarget;
+        container.innerHTML = ''; // clear old
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'beast-summary-box';
+
+        if (heading) {
+            const title = document.createElement('strong');
+            title.textContent = `${icon} ${heading}`;
+            wrapper.appendChild(title);
+        }
+
+        const list = document.createElement('ul');
+        list.className = 'beast-summary-list';
+
+        fields.forEach(field => {
+            const label =
+                field.getAttribute('aria-label') ||
+                field.getAttribute('placeholder') ||
+                field.dataset.label ||
+                field.name ||
+                '[unnamed]';
+
+            const messageElement = document.querySelector(`[data-reference-id="${field.dataset.beastId}"]`);
+            const message = messageElement?.textContent || 'Invalid field';
+
+            const item = document.createElement('li');
+            const link = document.createElement('a');
+            link.href = '#';
+            link.textContent = `${label}: ${message}`;
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (scrollTo) {
+                    field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    field.focus({ preventScroll: true });
+                }
+            });
+
+            item.appendChild(link);
+            list.appendChild(item);
+        });
+
+        wrapper.appendChild(list);
+        container.appendChild(wrapper);
     }
 }
