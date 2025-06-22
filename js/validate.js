@@ -16,6 +16,7 @@ class BeastValidator {
         onSuccess = null,
         onInit = null,
         onStepChange = null,
+        language = 'en',
     } = {}) {
         this.errorContainerClass = errorContainerClass;
         this.tooltipClass = tooltipClass;
@@ -33,6 +34,7 @@ class BeastValidator {
         this.onSuccess = onSuccess;
         this.onInit = onInit;
         this.onStepChange = onStepChange;
+        this.language = language,
 
         this.form = null;
         this.customValidators = {};
@@ -106,8 +108,6 @@ class BeastValidator {
             });
         });
 
-        this.language = 'en';
-
         this.messages = {
             en: {
                 required: 'This field is required',
@@ -124,7 +124,23 @@ class BeastValidator {
                 maxlength: (n) => `Maksimallængde er ${n} tegn`,
                 match: 'Værdierne stemmer ikke overens',
                 invalidFormat: 'Ugyldigt format'
-            }
+            },
+            de: {
+                required: 'Dieses Feld ist erforderlich',
+                email: 'Bitte geben Sie eine gültige E-Mail-Adresse ein',
+                minlength: (n) => `Mindestens ${n} Zeichen erforderlich`,
+                maxlength: (n) => `Maximal ${n} Zeichen erlaubt`,
+                match: 'Die Werte stimmen nicht überein',
+                invalidFormat: 'Ungültiges Format'
+            },
+            pirate: {
+                required: 'Ye gotta fill this in, matey!',
+                email: 'That be no proper sea-mail address!',
+                minlength: (n) => `Ye need at least ${n} scraggly letters`,
+                maxlength: (n) => `Whoa! No more than ${n} runes, ye scallywag!`,
+                match: 'These don’t be matchin’, ye landlubber!',
+                invalidFormat: 'That be a cursed format, it is!'
+            },
         };
 
         if (this.initSteps === true) {
@@ -332,8 +348,9 @@ class BeastValidator {
         const type = field.type;
         const isRequired = field.hasAttribute('required');
         const form = this.form;
+        const messages = this.messages[this.language] || {};
         let valid = true;
-        let errorMessage = field.dataset.errorMessage || 'This field is required';
+        let errorMessage = '';
         let errorTarget = field;
 
         this.log(`[VALIDATION] Validating field "${name}", type "${type}"`);
@@ -346,6 +363,7 @@ class BeastValidator {
             await new Promise(resolve => setTimeout(resolve, sleep * 1000));
         }
 
+        // 🔴 Required
         if (isRequired) {
             if (type === 'checkbox') {
                 valid = field.checked;
@@ -358,64 +376,72 @@ class BeastValidator {
             } else {
                 valid = field.value.trim() !== '';
             }
-            if (!valid) errorMessage = 'This field is required';
+            if (!valid) {
+                errorMessage = field.dataset.errorMessage || messages.required || 'This field is required';
+            }
         }
 
+        // 🟠 Checkbox group min
         if (type === 'checkbox' && field.dataset.min) {
             const boxes = form.querySelectorAll(`input[type="checkbox"][name="${name}"]`);
             const checkedCount = Array.from(boxes).filter(b => b.checked).length;
             const min = parseInt(field.dataset.min, 10);
-            valid = checkedCount >= min;
-            if (!valid) {
+            if (checkedCount < min) {
+                valid = false;
                 errorMessage = `Select at least ${min}`;
                 errorTarget = boxes[boxes.length - 1];
             }
         }
 
+        // 🔵 Pattern check
         if (field.dataset.pattern && field.value) {
             const regex = new RegExp(field.dataset.pattern);
             if (!regex.test(field.value)) {
                 valid = false;
-                errorMessage = 'Invalid format';
+                errorMessage = messages.invalidFormat || 'Invalid format';
             }
         }
 
+        // 🔁 Match check
         if (field.dataset.match && field.value) {
-            const otherField = this.form.querySelector(`[name="${field.dataset.match}"]`);
+            const otherField = form.querySelector(`[name="${field.dataset.match}"]`);
             if (otherField && otherField.value !== field.value) {
                 valid = false;
-                errorMessage = 'Values do not match';
+                errorMessage = messages.match || 'Values do not match';
             }
         }
 
+        // 📏 Min length
         if (field.hasAttribute('minlength') && field.value) {
             const minLength = parseInt(field.getAttribute('minlength'), 10);
             if (field.value.length < minLength) {
                 valid = false;
-                errorMessage = `Minimum length is ${minLength} characters`;
+                errorMessage = messages.minlength?.(minLength) || `Minimum length is ${minLength} characters`;
             }
         }
 
+        // 📏 Max length
         if (field.hasAttribute('maxlength') && field.value) {
             const maxLength = parseInt(field.getAttribute('maxlength'), 10);
             if (field.value.length > maxLength) {
                 valid = false;
-                errorMessage = `Maximum length is ${maxLength} characters`;
+                errorMessage = messages.maxlength?.(maxLength) || `Maximum length is ${maxLength} characters`;
             }
         }
 
+        // 📧 Email pattern
         if (type === 'email' && field.value) {
             const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailPattern.test(field.value)) {
                 valid = false;
-                errorMessage = 'Please enter a valid email address';
+                errorMessage = messages.email || 'Please enter a valid email address';
             }
         }
 
+        // 🧠 Custom validator
         if (field.dataset.validator) {
             const validatorName = field.dataset.validator;
             const validatorFn = this.customValidators[validatorName];
-
             if (typeof validatorFn === 'function') {
                 const result = await validatorFn(field);
                 if (result !== true) {
@@ -427,15 +453,12 @@ class BeastValidator {
             }
         }
 
-        field.classList.remove('validating', 'valid', 'invalid');
+        // 🧼 Handle invalid
+        field.classList.remove('validating');
+        field.classList.remove('valid', 'invalid');
 
         if (!valid) {
-            if (field.dataset.errorMessage) {
-                errorMessage = field.dataset.errorMessage;
-            }
-
             this.log(`[VALIDATION] Field "${name}" failed: ${errorMessage}`);
-            field.classList.add('invalid');
 
             field.dataset.dirty = 'dirty';
             this.createTooltip(field, errorTarget, errorMessage);
@@ -448,7 +471,6 @@ class BeastValidator {
                     container.dataset.referenceId = field.dataset.beastId;
                 } else {
                     this.clearErrorsFor(field);
-
                     const error = document.createElement('div');
                     error.className = this.errorContainerClass;
                     error.dataset.referenceId = field.dataset.beastId;
@@ -463,11 +485,12 @@ class BeastValidator {
                     field.classList.remove('shake');
                 }, { once: true });
             }
+
+            field.classList.add('invalid');
         } else {
             delete field.dataset.dirty;
-
-            this.log(`[VALIDATION] Field "${name}" passed`);
             field.classList.add('valid');
+            this.log(`[VALIDATION] Field "${name}" passed`);
         }
 
         return valid;
