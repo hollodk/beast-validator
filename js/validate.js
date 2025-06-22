@@ -15,6 +15,7 @@ class BeastValidator {
         onFail = null,
         onSuccess = null,
         onInit = null,
+        onStepChange = null,
     } = {}) {
         this.errorContainerClass = errorContainerClass;
         this.tooltipClass = tooltipClass;
@@ -31,6 +32,7 @@ class BeastValidator {
         this.onFail = onFail;
         this.onSuccess = onSuccess;
         this.onInit = onInit;
+        this.onStepChange = onStepChange;
 
         this.form = null;
         this.customValidators = {};
@@ -82,6 +84,27 @@ class BeastValidator {
                 });
             });
         }
+
+        this.form.querySelectorAll('[data-next]').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const currentStepSection = this.form.querySelector(`[data-step="${this.currentStep}"]`);
+                const forceFullValidation = currentStepSection && currentStepSection.hasAttribute('data-validate');
+
+                this.log(`[STEP] Next button clicked. Full validation? ${forceFullValidation}`);
+
+                const valid = forceFullValidation
+                    ? await this.validate()
+                    : await this.validateCurrentStep();
+
+                if (valid) this.nextStep();
+            });
+        });
+
+        this.form.querySelectorAll('[data-prev]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.prevStep();
+            });
+        });
 
         if (this.initSteps === true) {
             this.currentStep = 1;
@@ -150,6 +173,8 @@ class BeastValidator {
 
         const position = this.tooltips;
 
+        this.log(`[UI] Showing tooltip for "${field.name || '[unnamed]'}" at ${position}`);
+
         const container = target.parentElement;
         if (getComputedStyle(container).position === 'static') {
             container.style.position = 'relative';
@@ -184,6 +209,40 @@ class BeastValidator {
         tooltip.style.left = `${left}px`;
         tooltip.style.top = `${top}px`;
         tooltip.style.visibility = 'visible';
+    }
+
+    validateCurrentStep() {
+        const currentStep = this.currentStep;
+
+        const fields = this.form.querySelectorAll(`[data-step="${currentStep}"] input, [data-step="${currentStep}"] select, [data-step="${currentStep}"] textarea`);
+
+        let isValid = true;
+        let firstInvalid = null;
+        const failedFields = [];
+
+        this.clearErrors();
+
+        const validations = Array.from(fields).map(async (field) => {
+            const valid = await this.validateField(field);
+            if (!valid) {
+                if (!firstInvalid) firstInvalid = field;
+                isValid = false;
+                failedFields.push(field);
+            }
+        });
+
+        return Promise.all(validations).then(() => {
+            if (!isValid && firstInvalid) {
+                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstInvalid.focus({ preventScroll: true });
+
+                if (typeof this.onFail === 'function') {
+                    this.onFail(failedFields);
+                }
+            }
+
+            return isValid;
+        });
     }
 
     async validate() {
@@ -334,6 +393,8 @@ class BeastValidator {
                 errorMessage = field.dataset.errorMessage;
             }
 
+            this.log(`[VALIDATION] Field "${name}" failed: ${errorMessage}`);
+
             field.dataset.dirty = 'dirty';
             this.createTooltip(field, errorTarget, errorMessage);
 
@@ -352,6 +413,8 @@ class BeastValidator {
                     error.textContent = errorMessage;
                     errorTarget.insertAdjacentElement('afterend', error);
                 }
+            } else {
+                this.log(`[VALIDATION] Field "${name}" passed`);
             }
 
             if (this.shakeInput) {
@@ -371,6 +434,8 @@ class BeastValidator {
     clearErrorsFor(field) {
         const beastId = field.dataset.beastId;
         const related = document.querySelectorAll(`[data-reference-id="${beastId}"]`);
+
+        this.log(`[UI] Clearing errors for field "${field.name || '[unnamed]'}"`);
 
         related.forEach(el => {
             if (el.classList.contains(this.tooltipClass)) {
@@ -405,18 +470,31 @@ class BeastValidator {
         });
         this.currentStep = stepNumber;
         this.log(`[STEP] Showing step ${stepNumber}`);
+
+        if (typeof this.onStepChange === 'function') {
+            this.onStepChange(stepNumber);
+        }
     }
 
     nextStep() {
-        this.showStep(this.currentStep + 1);
+        if (this.currentStep < document.querySelectorAll('[data-step]').length) {
+            this.showStep(this.currentStep + 1);
+        } else {
+            this.log('[STEP] Already at last step, cannot go forward');
+        }
     }
 
     prevStep() {
-        this.showStep(this.currentStep - 1);
+        if (this.currentStep > 1) {
+            this.showStep(this.currentStep - 1);
+        } else {
+            this.log('[STEP] Already at first step, cannot go backward');
+        }
     }
 
     reset() {
-        // also clear all dirty
+        this.log('[ACTION] Form reset called, clearing all dirty fields and errors');
+
         this.clearErrors();
 
         this.form.querySelectorAll('[data-dirty="dirty"]').forEach((field) => {
@@ -425,6 +503,8 @@ class BeastValidator {
     }
 
     addValidator(name, fn) {
+        this.log(`[CUSTOM] Adding custom validator "${name}"`);
+
         this.customValidators[name] = fn;
     }
 }

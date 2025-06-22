@@ -168,7 +168,7 @@ Enable multi-step flow with `initSteps: true`. Sections are shown via `data-step
 
 ```html
 <section data-step="1">Step 1</section>
-<section data-step="2" style="display:none;">Step 2</section>
+<section data-step="2">Step 2</section>
 ```
 
 ### JavaScript
@@ -293,6 +293,6 @@ MIT — Free for personal & commercial use
 
 ## 👨‍💻 Author
 
-Made with 💛 by [@hollodk](https://github.com/hollodk)  
-🔗 [Demo](https://hollodk.github.io/beast-validator/)  
+Made with 💛 by [@hollodk](https://github.com/hollodk)
+🔗 [Demo](https://hollodk.github.io/beast-validator/)
 📁 [Repository](https://github.com/hollodk/beast-validator)

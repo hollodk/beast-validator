@@ -75,13 +75,17 @@
                                     <label class="form-label">Username *</label>
                                     <input type="text" class="form-control" name="username" required>
                                 </div>
+                                <button type="button" class="btn btn-primary" data-next>Next</button>
+                            </div>
+                            <div class="step-section" data-step="2" data-validate="all">
                                 <div class="mb-3">
                                     <label class="form-label">Password *</label>
                                     <input type="password" class="form-control" name="password" required>
                                 </div>
-                                <button type="submit" class="btn btn-primary next-step">Next</button>
+                                <button type="button" class="btn btn-secondary" data-prev>Prev</button>
+                                <button type="button" class="btn btn-primary" data-next>Submit</button>
                             </div>
-                            <div class="step-section" data-step="2">
+                            <div class="step-section" data-step="3">
                                 <p><b>Very nice, your form has been submitted.</b></p>
                             </div>
                         </form>
@@ -214,7 +218,8 @@
                 autoSubmit: false,
                 tooltips: 'top-center',
                 helperText: false,
-                onSuccess: () => stepForm.nextStep(),
+                onSuccess: () => alert("✅ Step form submitted!"),
+                onStepChange: (step) => console.log('You are by step '+step),
             });
 
             const advancedForm = new BeastValidator(document.getElementById('advancedForm'), {
