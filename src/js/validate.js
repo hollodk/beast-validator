@@ -1035,3 +1035,9 @@ class BeastValidator {
         }
     }
 }
+
+if (typeof window !== 'undefined') {
+    window.BeastValidator = BeastValidator; // for CDN/global use
+}
+
+export default BeastValidator; // for ES module bundlers

@@ -109,6 +109,18 @@ git clone https://github.com/hollodk/beast-validator.git
 <link rel="stylesheet" href="/your-path/beast-validator.css">
 ```
 
+### 📦 Module Mapping (for bundlers and CDNs)
+
+If you're using a bundler, `import BeastValidator from 'beastvalidator'` will automatically resolve to the correct ESM build thanks to these fields in `package.json`:
+
+```json
+{
+  "main": "dist/validate.umd.js",
+  "module": "dist/validate.esm.js",
+  "unpkg": "dist/validate.min.js",
+  "jsdelivr": "dist/validate.min.js"
+}
+
 ---
 
 ## 🧪 Example Usage
@@ -376,6 +388,71 @@ new BeastValidator('myForm', { debug: true });
 - [x] Password strength validator
 - [ ] TypeScript types
 - [ ] Accessibility improvements
+
+---
+
+## 🧩 Build Variants Overview
+
+| File                    | Format          | Use Case                                                  |
+|-------------------------|-----------------|-----------------------------------------------------------|
+| `dist/validate.esm.js`  | ESM             | ✅ Modern bundlers like Vite, Webpack, Rollup, etc.       |
+| `dist/validate.umd.js`  | UMD             | ✅ For inclusion via `<script>` in a browser (dev mode)   |
+| `dist/validate.min.js`  | UMD (minified)  | ✅ Production-ready browser version or CDN like jsDelivr  |
+
+---
+
+## 🧠 When to Use Which
+
+### 1. 🛠 Vite/Webpack/Rollup (Modern JavaScript Apps)
+
+Use: `dist/validate.esm.js`
+
+Why: This is an ES module (ESM) file optimized for modern JavaScript tooling. It supports tree-shaking and integrates cleanly into apps built with frameworks like React, Vue, Svelte, or Alpine.
+
+```js
+import BeastValidator from './dist/validate.esm.js';
+
+const validator = new BeastValidator('formId', { ... });
+```
+
+- ✅ Works out-of-the-box with Vite, Webpack, Rollup, etc.
+- ✅ Enables better build optimization (tree-shaking, minification)
+- ✅ Recommended for app development
+
+### 2. 🌐 Browser via &lt;script&gt; (Vanilla Sites or CMS like WordPress)
+
+Use: `dist/validate.min.js`
+
+Why: This is a minified UMD build that exposes BeastValidator globally via window.BeastValidator. Ideal if you're using BeastValidator directly in a browser without any build step.
+
+```html
+<link rel="stylesheet" href="style.min.css">
+<script src="dist/validate.min.js"></script>
+<script>
+  const validator = new BeastValidator('myForm', { debug: true });
+</script>
+```
+
+- ✅ No build step needed
+- ✅ Ready for use in HTML pages, WordPress, Laravel Blade, etc.
+- ✅ Optimized for production (small size, fast load)
+- ✅ Compatible with CDN usage (jsDelivr, unpkg)
+
+### 3. 🤓 For Debugging in Browser Without Build Tools
+
+Use: `dist/validate.umd.js`
+
+Why: This is the non-minified UMD build, useful for debugging or exploring how BeastValidator works in browser developer tools.
+
+```html
+<script src="dist/validate.umd.js"></script>
+<script>
+  const validator = new BeastValidator('myForm', { debug: true });
+</script>
+```
+
+- ✅ Easier to read and debug in the browser
+- 🚫 Not optimized for production (larger file size)
 
 ---
 

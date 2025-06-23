@@ -2,7 +2,10 @@
     "name": "beastvalidator",
     "version": "1.1.3",
     "description": "A DOM-powered JS form validator with tooltips, inline messages, and beautiful UX.",
-    "main": "dist/validate.min.js",
+    "main": "dist/validate.umd.js",
+    "module": "dist/validate.esm.js",
+    "unpkg": "dist/validate.min.js",
+    "jsdelivr": "dist/validate.min.js",
     "style": "dist/style.min.css",
     "author": "Michael Holm <hollo@hollo.dk>",
     "license": "MIT",
@@ -11,8 +14,9 @@
         "url": "https://github.com/hollodk/beast-validator.git"
     },
     "scripts": {
+        "dev": "vite",
         "test": "jest --coverage",
-        "build": "./build.sh"
+        "build": "./build.sh && rollup -c && vite build"
     },
     "keywords": [
         "form-validation",
@@ -23,6 +27,8 @@
     ],
     "devDependencies": {
         "clean-css-cli": "^5.6.3",
-        "jest": "^30.0.2"
+        "jest": "^30.0.2",
+        "rollup-plugin-terser": "^7.0.2",
+        "vite": "^6.3.5"
     }
 }
