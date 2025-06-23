@@ -1,6 +1,6 @@
 {
     "name": "beastvalidator",
-    "version": "1.1.2",
+    "version": "1.1.3",
     "description": "A DOM-powered JS form validator with tooltips, inline messages, and beautiful UX.",
     "main": "dist/validate.min.js",
     "style": "dist/style.min.css",
