@@ -345,53 +345,6 @@ validator.setLanguage('fr');
 
 ---
 
-## ❓ FAQ
-
-### How do I validate only part of the form?
-Use `validateField()` or `validateCurrentStep()`.
-
-### Can I skip auto-submission?
-Yes! Set `autoSubmit: false` and handle submission in `onSuccess()`.
-
-### Does it work in React/Vue?
-Yes, if you attach BeastValidator to a raw DOM node using `ref`.
-
-### Can I use it in modals or dynamic content?
-Yes. Make sure to call `new BeastValidator()` **after** the form appears in the DOM.
-
-### Can I use BeastValidator without defining validation in JavaScript?
-Yes! One of BeastValidator’s core strengths is that it leverages native HTML5 attributes like required, pattern, minlength, maxlength, type=email, and custom data-* attributes for validation logic. You don’t need to define a separate JS config.
-
-### Can I delay validation (e.g., to simulate an async check)?
-Yes. Use the data-sleep="1" attribute to pause validation for X seconds before checking the value. Useful for async debouncing.
-
-### How can I debug what’s happening?
-Set debug: true to get verbose console logging of all key lifecycle events:
-
-```js
-new BeastValidator('myForm', { debug: true });
-```
-
----
-
-## ✅ Roadmap
-
-- [x] Custom tooltips
-- [x] Step-by-step wizard
-- [x] Pattern and length validation
-- [x] Custom error containers and messages
-- [x] Multilingual support
-- [x] Shake animation
-- [x] Error summary rendering
-- [x] Build files in dist
-- [x] Build minified version
-- [x] Age filter
-- [x] Password strength validator
-- [ ] TypeScript types
-- [ ] Accessibility improvements
-
----
-
 ## 🧩 Build Variants Overview
 
 | File                    | Format          | Use Case                                                  |
@@ -454,6 +407,53 @@ Why: This is the non-minified UMD build, useful for debugging or exploring how B
 
 - ✅ Easier to read and debug in the browser
 - 🚫 Not optimized for production (larger file size)
+
+---
+
+## ❓ FAQ
+
+### How do I validate only part of the form?
+Use `validateField()` or `validateCurrentStep()`.
+
+### Can I skip auto-submission?
+Yes! Set `autoSubmit: false` and handle submission in `onSuccess()`.
+
+### Does it work in React/Vue?
+Yes, if you attach BeastValidator to a raw DOM node using `ref`.
+
+### Can I use it in modals or dynamic content?
+Yes. Make sure to call `new BeastValidator()` **after** the form appears in the DOM.
+
+### Can I use BeastValidator without defining validation in JavaScript?
+Yes! One of BeastValidator’s core strengths is that it leverages native HTML5 attributes like required, pattern, minlength, maxlength, type=email, and custom data-* attributes for validation logic. You don’t need to define a separate JS config.
+
+### Can I delay validation (e.g., to simulate an async check)?
+Yes. Use the data-sleep="1" attribute to pause validation for X seconds before checking the value. Useful for async debouncing.
+
+### How can I debug what’s happening?
+Set debug: true to get verbose console logging of all key lifecycle events:
+
+```js
+new BeastValidator('myForm', { debug: true });
+```
+
+---
+
+## ✅ Roadmap
+
+- [x] Custom tooltips
+- [x] Step-by-step wizard
+- [x] Pattern and length validation
+- [x] Custom error containers and messages
+- [x] Multilingual support
+- [x] Shake animation
+- [x] Error summary rendering
+- [x] Build files in dist
+- [x] Build minified version
+- [x] Age filter
+- [x] Password strength validator
+- [ ] TypeScript types
+- [ ] Accessibility improvements
 
 ---
 
