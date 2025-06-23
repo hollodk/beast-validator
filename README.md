@@ -105,8 +105,8 @@ git clone https://github.com/hollodk/beast-validator.git
 ```
 
 ```html
-<script src="/your-path/beast-validator.js"></script>
-<link rel="stylesheet" href="/your-path/beast-validator.css">
+<script src="/your-path/dist/validate.umd.js"></script>
+<link rel="stylesheet" href="/your-path/dist/style.css">
 ```
 
 ### 📦 Module Mapping (for bundlers and CDNs)
