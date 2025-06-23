@@ -26,6 +26,7 @@
         "validator"
     ],
     "devDependencies": {
+        "bootstrap": "^5.3.7",
         "clean-css-cli": "^5.6.3",
         "jest": "^30.0.2",
         "rollup-plugin-copy": "^3.5.0",
