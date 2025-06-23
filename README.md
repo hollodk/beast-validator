@@ -120,6 +120,7 @@ If you're using a bundler, `import BeastValidator from 'beastvalidator'` will au
   "unpkg": "dist/validate.min.js",
   "jsdelivr": "dist/validate.min.js"
 }
+```
 
 ---
 
