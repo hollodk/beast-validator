@@ -1,7 +1,10 @@
 # 🐾 BeastValidator
 
 ![npm](https://img.shields.io/npm/v/beastvalidator)
+![minified size](https://img.shields.io/bundlephobia/min/beastvalidator)
+![gzip size](https://img.shields.io/bundlephobia/minzip/beastvalidator)
 ![license](https://img.shields.io/npm/l/beastvalidator)
+![GitHub last commit](https://img.shields.io/github/last-commit/hollodk/beast-validator)
 
 > A flexible, no-dependency JavaScript form validator built for modern forms with great UX.
 >
@@ -70,8 +73,8 @@ new BeastValidator('myForm', {
 ### ✅ CDN
 
 ```html
-<script src="https://hollodk.github.io/beast-validator/beast-validator.js"></script>
-<link rel="stylesheet" href="https://hollodk.github.io/beast-validator/beast-validator.css">
+<script src="https://cdn.jsdelivr.net/npm/beastvalidator/dist/validate.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/beastvalidator/dist/style.min.css">
 ```
 
 ### 📦 NPM
